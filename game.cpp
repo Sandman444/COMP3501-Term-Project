@@ -21,7 +21,7 @@ namespace game {
 	float camera_far_clip_distance_g = 1000.0;
 	float camera_fov_g = 20.0; // Field-of-view of camera
 	const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
-	glm::vec3 camera_position_g(0.0, 0.0, 800.0);
+	glm::vec3 camera_position_g(0.0, 0.0, 50.0);
 	glm::vec3 camera_look_at_g(0.0, 0.0, 0.0);
 	glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
@@ -123,7 +123,10 @@ namespace game {
 		resman_.CreateCube("SimpleCubeMesh");
 
 		//Create a simple cylinder
-		resman_.CreateCylinder("SimpleCylinderMesh", 1.0, 1.0, 90, 30);
+		resman_.CreateCylinder("SimpleCylinderMesh", 0.5, 0.5, 90, 30);
+
+		//Create a simple torus
+		resman_.CreateTorus("SimpleTorusMesh");
 
 		// Load material to be applied to asteroids
 		std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
@@ -132,12 +135,9 @@ namespace game {
 
 
 	void Game::SetupScene(void) {
-
+		SceneNode* helicopter = scene_.CreateNode("helicopter", resman_.GetResource("SimpleCylinderMesh"), resman_.GetResource("ObjectMaterial"));
 		// Set background color for the scene
 		scene_.SetBackgroundColor(viewport_background_color_g);
-
-		// Create asteroid field
-		CreateAsteroidField();
 	}
 
 
@@ -185,10 +185,6 @@ namespace game {
 		}
 
 
-		//fire lasers 
-		if (key == GLFW_KEY_TAB) {
-			game->FireLasers();
-		}
 		// View control
 		float rot_factor(glm::pi<float>() / 180);
 
@@ -246,87 +242,4 @@ namespace game {
 		glfwTerminate();
 	}
 
-	Laser *Game::CreateLaserInstance(std::string entity_name, std::string object_name, std::string material_name) {
-
-		// Get resources
-		Resource *geom = resman_.GetResource(object_name);
-		if (!geom) {
-			throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\"")));
-		}
-
-		Resource *mat = resman_.GetResource(material_name);
-		if (!mat) {
-			throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
-		}
-
-		// Create laser instance
-		Laser *laser = new Laser(camera_.GetForward(), entity_name, geom, mat);
-		scene_.AddNode(laser);
-		return laser;
-	}
-
-	void Game::FireLasers() {
-		//ship fires two lasers from front guns
-		// Create laser instances
-		Laser *laser1 = CreateLaserInstance("laser1", "SimpleCubeMesh", "ObjectMaterial");
-		laser1->SetPosition(camera_.GetPosition());
-		laser1->Translate(glm::vec3(0.0, 0.0, 50.0));
-		laser1->SetScale(glm::vec3(0.5, 0.5, 100.0));
-
-		/*Laser *laser2 = CreateLaserInstance("laser2", "SimpleCudeMesh", "ObjectMaterial");
-		laser1->SetPosition(camera_position_g);
-		laser1->Translate(glm::vec3(0.0, -5.0, 0.0));
-		laser1->SetScale(glm::vec3(0.5, 0.5, 100));*/
-
-		//transform simplecube into laser shape
-
-	}
-
-	Asteroid *Game::CreateAsteroidInstance(std::string entity_name, std::string object_name, std::string material_name) {
-
-		// Get resources
-		Resource *geom = resman_.GetResource(object_name);
-		if (!geom) {
-			throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\"")));
-		}
-
-		Resource *mat = resman_.GetResource(material_name);
-		if (!mat) {
-			throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
-		}
-
-		// Create asteroid instance
-		Asteroid *ast = new Asteroid(entity_name, geom, mat);
-		scene_.AddNode(ast);
-		return ast;
-	}
-
-	void Game::CreateAsteroidField(int num_asteroids) {
-
-		// Create a number of asteroid instances
-		/*for (int i = 0; i < num_asteroids; i++) {
-			// Create instance name
-			std::stringstream ss;
-			ss << i;
-			std::string index = ss.str();
-			std::string name = "AsteroidInstance" + index;
-
-			// Create asteroid instance
-			Asteroid *ast = CreateAsteroidInstance(name, "SimpleSphereMesh", "ObjectMaterial");
-
-			// Set attributes of asteroid: random position, orientation, and
-			// angular momentum
-			ast->SetPosition(glm::vec3(-300.0 + 600.0*((float)rand() / RAND_MAX), -300.0 + 600.0*((float)rand() / RAND_MAX), 600.0*((float)rand() / RAND_MAX)));
-			ast->SetOrientation(glm::normalize(glm::angleAxis(glm::pi<float>()*((float)rand() / RAND_MAX), glm::vec3(((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX)))));
-			ast->SetAngM(glm::normalize(glm::angleAxis(0.05f*glm::pi<float>()*((float)rand() / RAND_MAX), glm::vec3(((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX), ((float)rand() / RAND_MAX)))));
-		}*/
-		//Asteroid *roid = CreateAsteroidInstance("testAstroid", "SimpleSphereMesh", "ObjectMaterial");
-		//roid->SetPosition(camera_.GetPosition());
-		//roid->Translate(glm::vec3(0.0, 0.0, -100.0));
-	}
-
-	bool Game::RaySphereIntersect(float radius, glm::vec3 sphere_pos, glm::vec3 ray_vector) {
-		//glm::vec3 unit_ray_vector = glm::normalize(ray_vector);
-		return false;
-	}
 } // namespace game

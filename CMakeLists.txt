@@ -5,11 +5,11 @@ project(Project)
 
 # Specify project files: header files and source files
 set(HDRS
-    asteroid.h camera.h game.h laser.h resource.h resource_manager.h scene_graph.h scene_node.h
+    camera.h game.h laser.h resource.h resource_manager.h scene_graph.h scene_node.h vehicle.h
 )
  
 set(SRCS
-    asteroid.cpp camera.cpp game.cpp main.cpp laser.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp material_vp.glsl material_fp.glsl
+    camera.cpp game.cpp main.cpp laser.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp material_vp.glsl material_fp.glsl vehicle.cpp
 
 )
 
