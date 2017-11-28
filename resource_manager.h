@@ -2,7 +2,7 @@
 #define RESOURCE_MANAGER_H_
 
 #include <string>
-#include <vector>
+#include <unordered_map>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -31,13 +31,18 @@ namespace game {
             Resource *GetResource(const std::string name) const;
 
             // Methods to create specific resources
+            // Create the geometry for a torus and add it to the list of resources
             void CreateTorus(std::string object_name, float loop_radius = 0.6, float circle_radius = 0.2, int num_loop_samples = 90, int num_circle_samples = 30);
+            // Create a sphere
             void CreateSphere(std::string object_name, float radius = 0.6, int num_samples_theta = 90, int num_samples_phi = 45);
-			void CreateCube(std::string object_name);
-			void CreateCylinder(std::string object_name, float loop_radius = 0.6, float circle_radius = 0.2, int num_loop_samples = 90, int num_circle_samples = 30);
+            // Create cube centered at (0, 0, 0) with sides of length 1
+            void CreateCube(std::string object_name);
+			// Create Cylinder
+			void CreateCylinder(std::string object_name, float cylinder_radius = 0.5, float cylinder_height = 1.0, int num_cylinder_samples = 90);
+
         private:
             // List storing all resources
-            std::vector<Resource*> resource_; 
+            std::unordered_map<std::string, Resource*> resource_; 
  
             // Methods to load specific types of resources
             // Load shaders programs

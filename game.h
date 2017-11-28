@@ -3,28 +3,21 @@
 
 #include <exception>
 #include <string>
+#include <vector>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "GameException.h"
+#include "Updateable.h"
+#include "InputController.h"
 #include "scene_graph.h"
 #include "resource_manager.h"
 #include "camera.h"
-#include "vehicle.h"
-#include "laser.h"
+#include "Helicopter.h"
+
 
 namespace game {
-
-    // Exception type for the game
-    class GameException: public std::exception
-    {
-        private:
-            std::string message_;
-        public:
-            GameException(std::string message) : message_(message) {};
-            virtual const char* what() const throw() { return message_.c_str(); };
-            virtual ~GameException() throw() {};
-    };
 
     // Game application
     class Game {
@@ -52,11 +45,19 @@ namespace game {
             // Resources available to the game
             ResourceManager resman_;
 
+			// Input controller
+			InputController inputController;
+
             // Camera abstraction
             Camera camera_;
 
+			//Game Objects
+			Helicopter *helicopter;
+
             // Flag to turn animation on/off
             bool animating_;
+
+			std::vector<Updateable*> updateables;
 
             // Methods to initialize the game
             void InitWindow(void);
@@ -66,6 +67,7 @@ namespace game {
             // Methods to handle events
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void ResizeCallback(GLFWwindow* window, int width, int height);
+
     }; // class Game
 
 } // namespace game

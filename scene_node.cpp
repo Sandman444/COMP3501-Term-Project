@@ -5,37 +5,84 @@
 #include <iostream>
 #include <time.h>
 
+#include "camera.h"
 #include "scene_node.h"
 
 namespace game {
 
-SceneNode::SceneNode(const std::string name, const Resource *geometry, const Resource *material){
+SceneNode::SceneNode(const std::string name) {
+
+	// Set name of scene node
+	name_ = name;
+
+	// Other attributes
+	scale_ = glm::vec3(1.0, 1.0, 1.0);
+
+	// Hierarchy
+	parent_ = NULL;
+}
+
+SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name, ResourceManager* resman){
+
+	// Get resources
+	Resource *geom;
+	if (object_name != std::string("")) {
+		geom = resman->GetResource(object_name);
+		if (!geom) {
+			throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\"")));
+		}
+	}
+	else {
+		geom = NULL;
+	}
+
+	Resource *mat;
+	if (material_name != std::string("")) {
+		mat = resman->GetResource(material_name);
+		if (!mat) {
+			throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
+		}
+	}
+	else {
+		mat = NULL;
+	}
 
     // Set name of scene node
     name_ = name;
 
-    // Set geometry
-    if (geometry->GetType() == PointSet){
-        mode_ = GL_POINTS;
-    } else if (geometry->GetType() == Mesh){
-        mode_ = GL_TRIANGLES;
-    } else {
-        throw(std::invalid_argument(std::string("Invalid type of geometry")));
-    }
+    if (geom){
+        // Set geometry
+        if (geom->GetType() == PointSet){
+            mode_ = GL_POINTS;
+        } else if (geom->GetType() == Mesh){
+            mode_ = GL_TRIANGLES;
+        } else {
+            throw(std::invalid_argument(std::string("Invalid type of geometry")));
+        }
 
-    array_buffer_ = geometry->GetArrayBuffer();
-    element_array_buffer_ = geometry->GetElementArrayBuffer();
-    size_ = geometry->GetSize();
+        array_buffer_ = geom->GetArrayBuffer();
+        element_array_buffer_ = geom->GetElementArrayBuffer();
+        size_ = geom->GetSize();
+    } else {
+        array_buffer_ = 0;
+    }
 
     // Set material (shader program)
-    if (material->GetType() != Material){
-        throw(std::invalid_argument(std::string("Invalid type of material")));
-    }
+    if (mat){
+        if (mat->GetType() != Material){
+            throw(std::invalid_argument(std::string("Invalid type of material")));
+        }
 
-    material_ = material->GetResource();
+        material_ = mat->GetResource();
+    } else {
+        material_ = 0;
+    }
 
     // Other attributes
     scale_ = glm::vec3(1.0, 1.0, 1.0);
+
+    // Hierarchy
+    parent_ = NULL;
 }
 
 
@@ -133,26 +180,35 @@ GLuint SceneNode::GetMaterial(void) const {
 }
 
 
-void SceneNode::Draw(Camera *camera){
+glm::mat4 SceneNode::Draw(Camera *camera, glm::mat4 parent_transf){
 
-    // Select proper material (shader program)
-    glUseProgram(material_);
+    if ((array_buffer_ > 0) && (material_ > 0)){
+        // Select proper material (shader program)
+        glUseProgram(material_);
 
-    // Set geometry to draw
-    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_array_buffer_);
+        // Set geometry to draw
+        glBindBuffer(GL_ARRAY_BUFFER, array_buffer_);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_array_buffer_);
 
-    // Set globals for camera
-    camera->SetupShader(material_);
+        // Set globals for camera
+        camera->SetupShader(material_);
 
-    // Set world matrix and other shader input variables
-    SetupShader(material_);
+        // Set world matrix and other shader input variables
+        glm::mat4 transf = SetupShader(material_, parent_transf);
 
-    // Draw geometry
-    if (mode_ == GL_POINTS){
-        glDrawArrays(GL_TRIANGLES, 0, size_);
+        // Draw geometry
+        if (mode_ == GL_POINTS){
+            glDrawArrays(mode_, 0, size_);
+        } else {
+            glDrawElements(mode_, size_, GL_UNSIGNED_INT, 0);
+        }
+
+        return transf;
     } else {
-        glDrawElements(mode_, size_, GL_UNSIGNED_INT, 0);
+        glm::mat4 rotation = glm::mat4_cast(orientation_);
+        glm::mat4 translation = glm::translate(glm::mat4(1.0), position_);
+        glm::mat4 transf = parent_transf * translation * rotation;
+        return transf;
     }
 }
 
@@ -163,7 +219,7 @@ void SceneNode::Update(void){
 }
 
 
-void SceneNode::SetupShader(GLuint program){
+glm::mat4 SceneNode::SetupShader(GLuint program, glm::mat4 parent_transf){
 
     // Set attributes for shaders
     GLint vertex_att = glGetAttribLocation(program, "vertex");
@@ -186,15 +242,38 @@ void SceneNode::SetupShader(GLuint program){
     glm::mat4 scaling = glm::scale(glm::mat4(1.0), scale_);
     glm::mat4 rotation = glm::mat4_cast(orientation_);
     glm::mat4 translation = glm::translate(glm::mat4(1.0), position_);
-    glm::mat4 transf = translation * rotation * scaling;
+    glm::mat4 transf = parent_transf * translation * rotation;
+    glm::mat4 local_transf = transf * scaling;
 
     GLint world_mat = glGetUniformLocation(program, "world_mat");
-    glUniformMatrix4fv(world_mat, 1, GL_FALSE, glm::value_ptr(transf));
+    glUniformMatrix4fv(world_mat, 1, GL_FALSE, glm::value_ptr(local_transf));
 
     // Timer
     GLint timer_var = glGetUniformLocation(program, "timer");
     double current_time = glfwGetTime();
     glUniform1f(timer_var, (float) current_time);
+
+    // Return transformation of node combined with parent, without scaling
+    return transf;
+}
+
+
+void SceneNode::addChild(SceneNode *node){
+
+    children_.push_back(node);
+    node->parent_ = this;
+}
+
+
+std::vector<SceneNode *>::const_iterator SceneNode::children_begin() const {
+
+    return children_.begin();
+}
+
+
+std::vector<SceneNode *>::const_iterator SceneNode::children_end() const {
+
+    return children_.end();
 }
 
 } // namespace game;

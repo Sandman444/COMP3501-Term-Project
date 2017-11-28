@@ -6,28 +6,20 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-
+#include "scene_node.h"
+#include "Helicopter.h"
 
 namespace game {
 
     // Abstraction of a camera
-    class Camera{
+    class Camera : public SceneNode {
 
         public:
             Camera(void);
             ~Camera();
- 
-            // Get global camera attributes
-            glm::vec3 GetPosition(void) const;
-            glm::quat GetOrientation(void) const;
 
-            // Set global camera attributes
-            void SetPosition(glm::vec3 position);
-            void SetOrientation(glm::quat orientation);
-            
-            // Perform global transformations of camera
-            void Translate(glm::vec3 trans);
-            void Rotate(glm::quat rot);
+			glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf) override;
+			void Update(void) override;
 
             // Get relative attributes of camera
             glm::vec3 GetForward(void) const;
@@ -49,9 +41,10 @@ namespace game {
             // Set all camera-related variables in shader program
             void SetupShader(GLuint program);
 
+			void follow(Helicopter* helicopter);
+			void setViewMode(std::string);
+
         private:
-            glm::vec3 position_; // Position of camera
-            glm::quat orientation_; // Orientation of camera
             glm::vec3 forward_; // Initial forward vector
             glm::vec3 side_; // Initial side vector
             glm::mat4 view_matrix_; // View matrix
@@ -59,6 +52,9 @@ namespace game {
 
             // Create view matrix from current camera parameters
             void SetupViewMatrix(void);
+
+			Helicopter *followingHelicopter;
+			int viewMode;
 
     }; // class Camera
 

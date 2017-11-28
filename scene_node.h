@@ -2,6 +2,7 @@
 #define SCENE_NODE_H_
 
 #include <string>
+#include <vector>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -9,17 +10,21 @@
 #define GLM_FORCE_RADIANS
 #include <glm/gtc/quaternion.hpp>
 
+#include "GameException.h"
+#include "resource_manager.h"
 #include "resource.h"
-#include "camera.h"
 
 namespace game {
+
+	class Camera;
 
     // Class that manages one object in a scene 
     class SceneNode {
 
         public:
             // Create scene node from given resources
-            SceneNode(const std::string name, const Resource *geometry, const Resource *material);
+			SceneNode(const std::string name);
+            SceneNode(const std::string name, std::string object_name, std::string material_name, ResourceManager* resman);
 
             // Destructor
             ~SceneNode();
@@ -44,7 +49,7 @@ namespace game {
 
             // Draw the node according to scene parameters in 'camera'
             // variable
-            virtual void Draw(Camera *camera);
+            virtual glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf);
 
             // Update the node
             virtual void Update(void);
@@ -56,6 +61,16 @@ namespace game {
             GLsizei GetSize(void) const;
             GLuint GetMaterial(void) const;
 
+            // Hierarchy-related methods
+            void addChild(SceneNode *node);
+            std::vector<SceneNode *>::const_iterator children_begin() const;
+            std::vector<SceneNode *>::const_iterator children_end() const;
+
+		protected:
+			glm::vec3 position_; // Position of node
+			glm::quat orientation_; // Orientation of node
+			glm::vec3 scale_; // Scale of node
+
         private:
             std::string name_; // Name of the scene node
             GLuint array_buffer_; // References to geometry: vertex and array buffers
@@ -63,12 +78,15 @@ namespace game {
             GLenum mode_; // Type of geometry
             GLsizei size_; // Number of primitives in geometry
             GLuint material_; // Reference to shader program
-            glm::vec3 position_; // Position of node
-            glm::quat orientation_; // Orientation of node
-            glm::vec3 scale_; // Scale of node
+ 
+            // Hierarchy
+            SceneNode *parent_;
+            std::vector<SceneNode *> children_;
 
             // Set matrices that transform the node in a shader program
-            void SetupShader(GLuint program);
+            // Return transformation of current node combined with
+            // parent transformation, without including scaling
+            glm::mat4 SetupShader(GLuint program, glm::mat4 parent_transf);
 
     }; // class SceneNode
 
