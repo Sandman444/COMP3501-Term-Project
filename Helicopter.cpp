@@ -108,7 +108,7 @@ namespace game {
 
 	void Helicopter::Update(void) {
 
-		// Up down left rigth acceleration
+		// Up down left right acceleration
 		glm::vec3 finalAcceleration;
 		if (glm::length(accelerationDirection) > 0) {
 			finalAcceleration = glm::normalize(accelerationDirection) * accelerationSpeed;
