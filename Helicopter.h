@@ -31,17 +31,19 @@ namespace game {
 
 		glm::vec3 velocity;
 		glm::vec3 accelerationDirection;
-		float accelerationFactor;
+		float accelerationSpeed;
 
 		glm::vec2 tiltDirection;
 		glm::vec2 tiltVelocity;
+		float tiltSpeed;
 
 		float turnVelocity = 0;
-		int turnAccelerationDirection = 0;
-		float turnAccelerationFactor;
+		int turnDirection = 0;
+		float turnSpeed;
 
 		float tiltFriction;
 		float airFriction;
+		float levelingForce;
 	};
 
 } // namespace game

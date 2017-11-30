@@ -15,7 +15,7 @@ namespace game {
 	glm::vec3 DirectionalSceneNode::getForward(void) const {
 
 		glm::vec3 current_forward = orientation_ * forward_;
-		return current_forward; // Return -forward since the DirectionalSceneNode coordinate system points in the opposite direction
+		return current_forward;
 	}
 
 
@@ -38,21 +38,21 @@ namespace game {
 
 	void DirectionalSceneNode::pitch(float angle) {
 
-		glm::quat rotation = glm::angleAxis(angle, getSide());
+		glm::quat rotation = glm::normalize(glm::angleAxis(angle, getSide()));
 		orientation_ = rotation * orientation_;
 	}
 
 
 	void DirectionalSceneNode::yaw(float angle) {
 
-		glm::quat rotation = glm::angleAxis(angle, getUp());
+		glm::quat rotation = glm::normalize(glm::angleAxis(angle, getUp()));
 		orientation_ = rotation * orientation_;
 	}
 
 
 	void DirectionalSceneNode::roll(float angle) {
 
-		glm::quat rotation = glm::angleAxis(angle, getForward());
+		glm::quat rotation = glm::normalize(glm::angleAxis(angle, getForward()));
 		orientation_ = rotation * orientation_;
 	}
 

@@ -134,6 +134,7 @@ void Game::SetupScene(void){
 	helicopter->SetPosition(glm::vec3(0.0, 0.0, 45.0));
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
+	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
 	Helicopter *otherCopter = new Helicopter(&resman_);

@@ -56,12 +56,13 @@ namespace game {
 		side_ = glm::vec3(0, 0, 1);
 
 		// Other settings
-		accelerationFactor = 0.001f;
-		//tiltAccelerationFactor = 0.002f;
-		turnAccelerationFactor = 0.001f;
+		accelerationSpeed = 0.001f;
+		turnSpeed = 0.0008f;
+		tiltSpeed = 0.001f;
 
 		tiltFriction = 0.03f;
 		airFriction = 0.02f;
+		levelingForce = 0.07f;
 	}
 
 
@@ -98,19 +99,19 @@ namespace game {
 	}
 
 	void Helicopter::turnLeft() {
-		turnAccelerationDirection += 1;
+		turnDirection += 1;
 	}
 
 	void Helicopter::turnRight() {
-		turnAccelerationDirection += -1;
+		turnDirection += -1;
 	}
 
 	void Helicopter::Update(void) {
 
-		// Up and down acceleration
+		// Up down left rigth acceleration
 		glm::vec3 finalAcceleration;
 		if (glm::length(accelerationDirection) > 0) {
-			finalAcceleration = glm::normalize(accelerationDirection) * accelerationFactor;
+			finalAcceleration = glm::normalize(accelerationDirection) * accelerationSpeed;
 		}
 
 		velocity += finalAcceleration - (velocity * airFriction);
@@ -121,34 +122,32 @@ namespace game {
 		}
 
 
-		// Tilting while moving: DOESN'T WORK ):
+		// Tilting while moving
 		glm::vec2 finalTiltDirection;
 		if (glm::length(tiltDirection) > 0) {
-			finalTiltDirection = glm::normalize(tiltDirection) * 0.001f;
+			finalTiltDirection = glm::normalize(tiltDirection) * tiltSpeed;
 		}
 
 		tiltVelocity += finalTiltDirection - (tiltVelocity * tiltFriction);
-		//pitch(tiltVelocity.y);
-		//roll(-tiltVelocity.x);
+		pitch(tiltVelocity.y);
+		roll(-tiltVelocity.x);
 		tiltDirection = glm::vec2(0);
 		if (glm::abs(glm::length(tiltVelocity)) < 0.0001) {
 			tiltVelocity = glm::vec2(0);
 		}
 
-		float angle = glm::angle(getUp(), glm::vec3(0, 1, 0));
-		glm::vec3 axis = glm::cross(getUp(), glm::vec3(0, 1, 0));
-		//Rotate(glm::angleAxis(angle * 0.01f, axis));
+		// Leveling
+		glm::vec2 flatenedUp = -glm::vec2(getUp().x, getUp().z);
+		glm::vec2 flatenedForward = glm::vec2(getForward().x, getForward().z);
+		glm::vec2 flatenedSide = glm::vec2(getSide().x, getSide().z);
+		pitch(glm::dot(flatenedUp, flatenedForward) * levelingForce);
+		roll(-glm::dot(flatenedUp, flatenedSide) * levelingForce);
 		
-		//if (angle < 0.1f) {
-			//SetOrientation(glm::angleAxis(0.0f, glm::vec3(0, 1, 0)));
-		//}
-
-
 
 		// Adjusting yaw
-		turnVelocity += (turnAccelerationDirection * turnAccelerationFactor) - (turnVelocity * tiltFriction);
+		turnVelocity += (turnDirection * turnSpeed) - (turnVelocity * tiltFriction);
 		yaw(turnVelocity);
-		turnAccelerationDirection = 0;
+		turnDirection = 0;
 		if (glm::abs(glm::length(turnVelocity)) < 0.0001) {
 			turnVelocity = 0;
 		}
