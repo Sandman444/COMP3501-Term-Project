@@ -28,11 +28,12 @@ glm::mat4 Camera::Draw(Camera *camera, glm::mat4 parent_transf) {
 
 void Camera::Update(void) {
 	// update camera position
+	glm::vec3 flatenedForward = glm::vec3(followingHelicopter->getForward().x, 0, followingHelicopter->getForward().z);
 	if (viewMode == 1) {
-		SetView(followingHelicopter->GetPosition() - followingHelicopter->getForward() * 2.0f + followingHelicopter->getUp() * 0.5f, followingHelicopter->getForward(), followingHelicopter->getUp());
+		SetView(followingHelicopter->GetPosition() - flatenedForward * 2.0f + glm::vec3(0, 1, 0) * 0.5f, flatenedForward, glm::vec3(0, 1, 0));
 	}
-	else {
-		SetView(followingHelicopter->GetPosition() + followingHelicopter->getForward() * 0.3f, followingHelicopter->getForward(), followingHelicopter->getUp());
+	else if (viewMode == 0) {
+		SetView(followingHelicopter->GetPosition() + followingHelicopter->getForward() * 0.3f, flatenedForward, glm::vec3(0, 1, 0));
 	}
 }
 

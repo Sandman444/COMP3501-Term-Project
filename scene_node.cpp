@@ -122,7 +122,7 @@ void SceneNode::SetPosition(glm::vec3 position){
 
 void SceneNode::SetOrientation(glm::quat orientation){
 
-    orientation_ = orientation;
+    orientation_ = glm::normalize(orientation);
 }
 
 
@@ -140,7 +140,7 @@ void SceneNode::Translate(glm::vec3 trans){
 
 void SceneNode::Rotate(glm::quat rot){
 
-    orientation_ *= rot;
+    orientation_ *= glm::normalize(rot);
 }
 
 
