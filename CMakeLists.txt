@@ -5,7 +5,7 @@ project(SceneGraphDemo)
 
 # Specify project files: header files and source files
 set(HDRS
-    camera.h game.h resource.h resource_manager.h scene_graph.h scene_node.h InputController.h Updateable.h Helicopter.h GameException.h DirectionalSceneNode.h
+    camera.h game.h resource.h resource_manager.h scene_graph.h scene_node.h InputController.h Updateable.h Helicopter.h GameException.h DirectionalSceneNode.h Tank.h
 )
  
 set(SRCS
