@@ -42,9 +42,12 @@ void Game::Init(void){
     InitView();
     InitEventHandlers();
 
+	helicopterProjectileManager.setScene(&scene_);
+
 	// Add updateables
 	updateables.push_back((Updateable*)&scene_);
 	updateables.push_back((Updateable*)&inputController);
+	updateables.push_back((Updateable*)&helicopterProjectileManager);
 
     // Set variables
     animating_ = true;
@@ -115,13 +118,12 @@ void Game::InitEventHandlers(void){
 
 
 void Game::SetupResources(void){
-
-	resman_.CreateCylinder("CylinderMesh");
-    resman_.CreateCube("CubeMesh");
+	ResourceManager::theResourceManager().CreateCylinder("CylinderMesh");
+	ResourceManager::theResourceManager().CreateCube("CubeMesh");
 
     // Load material
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
-    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
+	ResourceManager::theResourceManager().LoadResource(Material, "ObjectMaterial", filename.c_str());
 }
 
 
@@ -130,14 +132,14 @@ void Game::SetupScene(void){
     // Set background color for the scene
     scene_.SetBackgroundColor(viewport_background_color_g);
 
-	helicopter = new Helicopter(&resman_);
+	helicopter = new Helicopter(&helicopterProjectileManager);
 	helicopter->SetPosition(glm::vec3(0.0, 0.0, 45.0));
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
-	Helicopter *otherCopter = new Helicopter(&resman_);
+	Helicopter *otherCopter = new Helicopter(&helicopterProjectileManager);
 	scene_.addNode(otherCopter);
 	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
 

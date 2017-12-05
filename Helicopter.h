@@ -1,7 +1,9 @@
 #ifndef HELICOPTER_H 
 #define HELICOPTER_H
 
+
 #include "DirectionalSceneNode.h"
+#include "ProjectileManager.h"
 
 namespace game {
 
@@ -9,7 +11,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Helicopter(ResourceManager* resman);
+		Helicopter(ProjectileManager *manager);
 
 		// Destructor
 		~Helicopter();
@@ -24,8 +26,11 @@ namespace game {
 		void moveBackward();
 		void turnLeft();
 		void turnRight();
+		void fireMissile();
 
 	private:
+
+		ProjectileManager *projectileManager;
 
 		SceneNode *body, *cockpit, *rotorbladeJoint, *rotorBlade, *tail, *tailBlade;
 

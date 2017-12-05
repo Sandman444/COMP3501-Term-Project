@@ -9,13 +9,6 @@
 
 namespace game {
 
-ResourceManager::ResourceManager(void){
-}
-
-
-ResourceManager::~ResourceManager(){
-}
-
 
 void ResourceManager::AddResource(ResourceType type, const std::string name, GLuint resource, GLsizei size){
 
