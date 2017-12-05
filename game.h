@@ -15,6 +15,7 @@
 #include "resource_manager.h"
 #include "camera.h"
 #include "Helicopter.h"
+#include "Tank.h"
 
 
 namespace game {
@@ -53,6 +54,7 @@ namespace game {
 
 			//Game Objects
 			Helicopter *helicopter;
+			Tank *tank;
 
             // Flag to turn animation on/off
             bool animating_;

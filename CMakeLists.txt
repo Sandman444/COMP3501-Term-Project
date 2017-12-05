@@ -9,7 +9,7 @@ set(HDRS
 )
  
 set(SRCS
-    camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp material_vp.glsl material_fp.glsl
+    camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp Tank.cpp material_vp.glsl material_fp.glsl
 
 )
 

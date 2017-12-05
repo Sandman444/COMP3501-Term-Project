@@ -130,6 +130,8 @@ void Game::SetupScene(void){
     // Set background color for the scene
     scene_.SetBackgroundColor(viewport_background_color_g);
 
+
+
 	helicopter = new Helicopter(&resman_);
 	helicopter->SetPosition(glm::vec3(0.0, 0.0, 45.0));
 	inputController.control(helicopter);
@@ -141,6 +143,9 @@ void Game::SetupScene(void){
 	scene_.addNode(otherCopter);
 	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
 
+	tank = new Tank(&resman_);
+	tank->SetPosition(glm::vec3(0.0, 0.0, 50.0));
+	scene_.addNode(tank);
 }
 
 
