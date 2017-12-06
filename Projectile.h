@@ -18,7 +18,12 @@ namespace game {
 		void setForward(glm::vec3 newForward);
 
 		virtual void move();
-		glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf);
+		glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf) override;
+
+		void SetPosition(glm::vec3 position);
+		float getBoundingSphereRadius(void) const override;
+		bool isOutOfRange();
+
 
 	protected:
 
@@ -32,7 +37,9 @@ namespace game {
 
 		SceneNode *projectileModel;
 
-		float speed = 0.1f;
+		glm::vec3 startingPosition;
+		float speed = 0.2f;
+		float activeRange = 45.0;
 		bool active = true;
 	};
 

@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 #include "Projectile.h"
 
@@ -19,11 +20,12 @@ namespace game {
 	}
 
 	std::string Projectile::computeProjectileId() {
-		return "Projectile" + ++projectileId;
+		return "Projectile" + std::to_string(projectileId++);
 	}
 
 	void Projectile::buildModel() {
 		projectileModel = new SceneNode(GetName() + "Model", "CubeMesh", "ObjectMaterial");
+		projectileModel->SetScale(glm::vec3(0.3, 0.1, 0.1));
 		this->addChild(projectileModel);
 	}
 
@@ -35,6 +37,11 @@ namespace game {
 		forward_ = newForward;
 	}
 
+	void Projectile::SetPosition(glm::vec3 position) {
+		startingPosition = position;
+		SceneNode::SetPosition(position);
+	}
+
 	void Projectile::move() {
 		Translate(forward_ * speed);
 	}
@@ -44,8 +51,16 @@ namespace game {
 			return SceneNode::Draw(camera, parent_transf);
 		}
 		else {
-			return glm::mat4(1.0);
+			return glm::mat4(0.0);
 		}
+	}
+
+	float Projectile::getBoundingSphereRadius(void) const {
+		return projectileModel->GetScale().x > projectileModel->GetScale().y ? std::max(projectileModel->GetScale().x, projectileModel->GetScale().z) : std::max(projectileModel->GetScale().y, projectileModel->GetScale().z);
+	}
+
+	bool Projectile::isOutOfRange() {
+		return glm::distance(startingPosition, GetPosition()) > activeRange;
 	}
 
 } // namespace game

@@ -90,9 +90,8 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 SceneNode::~SceneNode(){
 }
 
-glm::vec4 SceneNode::getBoundingSphere(void) const {
-	float maxScale = GetScale().x > GetScale().y ? std::max(GetScale().x, GetScale().z) : std::max(GetScale().y, GetScale().z);
-	return glm::vec4(GetPosition(), maxScale);
+float SceneNode::getBoundingSphereRadius(void) const {
+	return GetScale().x > GetScale().y ? std::max(GetScale().x, GetScale().z) : std::max(GetScale().y, GetScale().z);
 }
 
 

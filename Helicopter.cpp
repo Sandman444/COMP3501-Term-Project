@@ -3,6 +3,7 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 #include "Helicopter.h"
 
@@ -110,7 +111,11 @@ namespace game {
 	}
 
 	void Helicopter::fireMissile() {
-		projectileManager->spawnProjectile(GetPosition(), getForward());
+		double currentTime = glfwGetTime();
+		if (currentTime - lastFire > fireInterval) {
+			lastFire = currentTime;
+			projectileManager->spawnProjectile(GetPosition(), getForward(), GetOrientation());
+		}
 	}
 
 	void Helicopter::Update(void) {
@@ -164,6 +169,10 @@ namespace game {
 		float rot_factor(glm::pi<float>() / 10);
 		rotorBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(1, 0, 0)));
 		tailBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(0, 0, 1)));
+	}
+
+	float Helicopter::getBoundingSphereRadius(void) const {
+		return body->GetScale().x > body->GetScale().y ? std::max(body->GetScale().x, body->GetScale().z) : std::max(body->GetScale().y, body->GetScale().z);
 	}
 
 

@@ -28,6 +28,8 @@ namespace game {
 		void turnRight();
 		void fireMissile();
 
+		float getBoundingSphereRadius(void) const override;
+
 	private:
 
 		ProjectileManager *projectileManager;
@@ -49,6 +51,9 @@ namespace game {
 		float tiltFriction;
 		float airFriction;
 		float levelingForce;
+
+		double lastFire = 0;
+		double fireInterval = 0.5;
 	};
 
 } // namespace game

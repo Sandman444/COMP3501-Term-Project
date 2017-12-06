@@ -21,8 +21,8 @@ namespace game {
 
 		void update();
 		void setScene(SceneGraph *sceneGraph);
-		bool testCollision(Projectile *projectile, glm::vec4 sphere);
-		void spawnProjectile(glm::vec3 position, glm::vec3 initialForward);
+		bool sphereCollision(SceneNode *projectile, SceneNode *collideable);
+		void spawnProjectile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation);
 		void addCollideable(SceneNode *collideable);
 
 	private:

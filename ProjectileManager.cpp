@@ -14,39 +14,45 @@ namespace game {
 	}
 
 	void ProjectileManager::setScene(SceneGraph *sceneGraph) {
-		
+
 		scene = sceneGraph;
 	}
 
 	void ProjectileManager::update() {
 
-		for (std::vector<Projectile*>::iterator projectile = projectiles.begin(); projectile != projectiles.end(); ++projectile) {
+		for (std::vector<Projectile*>::iterator projectile = projectiles.begin(); projectile != projectiles.end();) {
 
 			bool collisionDetected = false;
 
 			for (std::vector<SceneNode*>::iterator collideable = collideables.begin(); collideable != collideables.end(); ++collideable) {
-				if (glm::distance((*projectile)->GetPosition(), (*collideable)->GetPosition()) < distanceThreshold &&
-					testCollision(*projectile, (*collideable)->getBoundingSphere())) {
-
+				if (sphereCollision(*projectile, *collideable)) {
 					collisionDetected = true;
-					(*projectile)->setActive(false);
-					projectile = projectiles.erase(projectile); // Remove from projectiles list
-					idleProjectiles.push_back(*projectile);
+					//(*collideable)->setActive(false);
 					break;
 				}
 			}
 
+			if ((*projectile)->isOutOfRange()) {
+				collisionDetected = true;
+			}
+
 			if (!collisionDetected) {
 				(*projectile)->move();
+				++projectile;
+			}
+			else {
+				(*projectile)->setActive(false);
+				idleProjectiles.push_back(*projectile);
+				projectile = projectiles.erase(projectile); // Remove from projectiles list
 			}
 		}
 	}
 
-	bool ProjectileManager::testCollision(Projectile *projectile, glm::vec4 sphere) {
-		return false;
+	bool ProjectileManager::sphereCollision(SceneNode *projectile, SceneNode *collideable) {
+		return glm::distance(projectile->GetPosition(), collideable->GetPosition()) < (projectile->getBoundingSphereRadius() + collideable->getBoundingSphereRadius());
 	}
 
-	void ProjectileManager::spawnProjectile(glm::vec3 position, glm::vec3 initialForward) {
+	void ProjectileManager::spawnProjectile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation) {
 		Projectile *newProjectile;
 		if (idleProjectiles.size() == 0) {
 			newProjectile = new Projectile(position, initialForward);
@@ -59,6 +65,7 @@ namespace game {
 			newProjectile->setForward(initialForward);
 			newProjectile->setActive(true);
 		}
+		newProjectile->SetOrientation(orientation);
 		projectiles.push_back(newProjectile);
 	}
 

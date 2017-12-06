@@ -36,7 +36,7 @@ namespace game {
             glm::vec3 GetPosition(void) const;
             glm::quat GetOrientation(void) const;
             glm::vec3 GetScale(void) const;
-			glm::vec4 getBoundingSphere(void) const;
+			virtual float getBoundingSphereRadius(void) const;
 
             // Set node attributes
             void SetPosition(glm::vec3 position);
