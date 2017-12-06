@@ -13,6 +13,7 @@
 #include "InputController.h"
 #include "scene_graph.h"
 #include "resource_manager.h"
+#include "ProjectileManager.h"
 #include "camera.h"
 #include "Helicopter.h"
 
@@ -42,11 +43,11 @@ namespace game {
             // Scene graph containing all nodes to render
             SceneGraph scene_;
 
-            // Resources available to the game
-            ResourceManager resman_;
-
 			// Input controller
 			InputController inputController;
+
+			// Helicopter projectile manager
+			ProjectileManager helicopterProjectileManager;
 
             // Camera abstraction
             Camera camera_;

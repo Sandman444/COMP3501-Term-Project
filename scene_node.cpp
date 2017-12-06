@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <time.h>
+#include <algorithm>
 
 #include "camera.h"
 #include "scene_node.h"
@@ -22,12 +23,12 @@ SceneNode::SceneNode(const std::string name) {
 	parent_ = NULL;
 }
 
-SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name, ResourceManager* resman){
+SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name){
 
 	// Get resources
 	Resource *geom;
 	if (object_name != std::string("")) {
-		geom = resman->GetResource(object_name);
+		geom = ResourceManager::theResourceManager().GetResource(object_name);
 		if (!geom) {
 			throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\"")));
 		}
@@ -38,7 +39,7 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 
 	Resource *mat;
 	if (material_name != std::string("")) {
-		mat = resman->GetResource(material_name);
+		mat = ResourceManager::theResourceManager().GetResource(material_name);
 		if (!mat) {
 			throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
 		}
@@ -87,6 +88,10 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 
 
 SceneNode::~SceneNode(){
+}
+
+float SceneNode::getBoundingSphereRadius(void) const {
+	return GetScale().x > GetScale().y ? std::max(GetScale().x, GetScale().z) : std::max(GetScale().y, GetScale().z);
 }
 
 

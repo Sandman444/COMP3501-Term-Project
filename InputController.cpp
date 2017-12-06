@@ -46,14 +46,17 @@ namespace game {
 		if (keyPressed[GLFW_KEY_I]) {
 			controlledHelicopter->moveUp();
 		}
-		if (keyPressed[GLFW_KEY_J]) {
+		if (keyPressed[GLFW_KEY_K]) {
 			controlledHelicopter->moveDown();
 		}
-		if (keyPressed[GLFW_KEY_K]) {
+		if (keyPressed[GLFW_KEY_J]) {
 			controlledHelicopter->turnLeft();
 		}
 		if (keyPressed[GLFW_KEY_L]) {
 			controlledHelicopter->turnRight();
+		}
+		if (keyPressed[GLFW_KEY_F]) {
+			controlledHelicopter->fireMissile();
 		}
 	}
 
