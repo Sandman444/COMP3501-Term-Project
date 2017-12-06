@@ -5,11 +5,11 @@ project(SceneGraphDemo)
 
 # Specify project files: header files and source files
 set(HDRS
-    camera.h game.h resource.h resource_manager.h scene_graph.h scene_node.h InputController.h Updateable.h Helicopter.h GameException.h DirectionalSceneNode.h Tank.h
-)
+    Turret.h camera.h game.h resource.h resource_manager.h scene_graph.h scene_node.h InputController.h Updateable.h Helicopter.h GameException.h DirectionalSceneNode.h Tank.h
+ )
  
 set(SRCS
-    camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp Tank.cpp material_vp.glsl material_fp.glsl
+    camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp Tank.cpp Turret.cpp material_vp.glsl material_fp.glsl
 
 )
 

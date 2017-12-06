@@ -133,19 +133,19 @@ void Game::SetupScene(void){
 
 
 	helicopter = new Helicopter(&resman_);
-	helicopter->SetPosition(glm::vec3(0.0, 0.0, 45.0));
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
-	Helicopter *otherCopter = new Helicopter(&resman_);
-	scene_.addNode(otherCopter);
-	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
-
-	tank = new Tank(&resman_);
-	tank->SetPosition(glm::vec3(0.0, 0.0, 50.0));
-	scene_.addNode(tank);
+	/*Helicopter *otherCopter = new Helicopter(&resman_);
+	scene_.addNode(otherCopter);*/
+	turret = new Turret(&resman_);
+	turret->SetPosition(glm::vec3(0.0, 0.0, 0.0));
+	scene_.addNode(turret);
+	/*tank = new Tank(&resman_);
+	tank->SetPosition(glm::vec3(0.0, 0.0, 0.0));
+	scene_.addNode(tank);*/
 }
 
 

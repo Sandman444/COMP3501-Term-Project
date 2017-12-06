@@ -30,22 +30,22 @@ namespace game {
 		tank_body->addChild(gun_turret);
 		
 		// Set up barrel
-		gun_barrel->SetScale(glm::vec3(gunScale.x / 3, gunScale.y * 3, gunScale.z / 3));
+		gun_barrel->SetScale(glm::vec3(gunScale.x / 3, gunScale.y * 2.0, gunScale.z / 3));
 		glm::vec3 barrelScale = gun_barrel->GetScale();
-		gun_barrel->SetPosition(glm::vec3(0, -gunScale.y / 4, 0));
+		gun_barrel->SetPosition(glm::vec3(gunScale.x / 3, gunScale.y / 5, 0.0));
 		gun_barrel->SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(0, 0, 1.0)));
 		gun_turret->addChild(gun_barrel);
 
 		//Set up 1st tread
-		tread1->SetScale(glm::vec3(tankBodyScale.x / 1.5, tankBodyScale.y * 3, tankBodyScale.z / 1.5));
+		tread1->SetScale(glm::vec3(tankBodyScale.x * 1.5, tankBodyScale.y * 2, tankBodyScale.z / 3));
 		glm::vec3 tread1Scale = tread1->GetScale();
-		tread1->SetPosition(glm::vec3(-tankBodyScale.x * 0.5, 0, 0));
+		tread1->SetPosition(glm::vec3(0, 0, -tankBodyScale.z / 2));
 		tank_body->addChild(tread1);
 		
 		//setup 2nd tread
-		tread2->SetScale(glm::vec3(tankBodyScale.x / 2, tankBodyScale.y / 2, tankBodyScale.z * 1.1));
+		tread2->SetScale(glm::vec3(tankBodyScale.x * 1.5, tankBodyScale.y * 2, tankBodyScale.z / 3));
 		glm::vec3 tread2Scale = tread2->GetScale();
-		tread2->SetPosition(glm::vec3(tankBodyScale.x * 0.5, 0, 0));
+		tread2->SetPosition(glm::vec3(0, 0, tankBodyScale.z / 2));
 		tank_body->addChild(tread2);
 	}
 
