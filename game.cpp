@@ -138,11 +138,16 @@ void Game::SetupScene(void){
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
+  turret = new Turret(&resman_);
+	turret->SetPosition(glm::vec3(0.0, 0.0, 0.0));
+	scene_.addNode(turret);
+	/*tank = new Tank(&resman_);
+	tank->SetPosition(glm::vec3(0.0, 0.0, 0.0));
+	scene_.addNode(tank);*/
 	Helicopter *otherCopter = new Helicopter(&helicopterProjectileManager);
 	scene_.addNode(otherCopter);
 	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
 	helicopterProjectileManager.addCollideable(otherCopter);
-
 }
 
 
