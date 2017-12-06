@@ -3,18 +3,22 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 #include "Helicopter.h"
 
 namespace game {
 
-	Helicopter::Helicopter(ResourceManager* resman) : DirectionalSceneNode("helicopter", "", "", resman) {
-		body = new SceneNode("helicopter_body", "CubeMesh", "ObjectMaterial", resman);
-		cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "ObjectMaterial", resman);
-		rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "ObjectMaterial", resman);
-		rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", resman);
-		tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", resman);
-		tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", resman);
+	Helicopter::Helicopter(ProjectileManager *manager) : DirectionalSceneNode("helicopter", "", "") {
+
+		projectileManager = manager;
+
+		body = new SceneNode("helicopter_body", "CubeMesh", "ObjectMaterial");
+		cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "ObjectMaterial");
+		rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "ObjectMaterial");
+		rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
+		tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
+		tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
 
 		// Set up body
 		body->SetScale(glm::vec3(0.42, 0.15, 0.15));
@@ -106,6 +110,14 @@ namespace game {
 		turnDirection += -1;
 	}
 
+	void Helicopter::fireMissile() {
+		double currentTime = glfwGetTime();
+		if (currentTime - lastFire > fireInterval) {
+			lastFire = currentTime;
+			projectileManager->spawnProjectile(GetPosition(), getForward(), GetOrientation());
+		}
+	}
+
 	void Helicopter::Update(void) {
 
 		// Up down left right acceleration
@@ -157,6 +169,10 @@ namespace game {
 		float rot_factor(glm::pi<float>() / 10);
 		rotorBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(1, 0, 0)));
 		tailBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(0, 0, 1)));
+	}
+
+	float Helicopter::getBoundingSphereRadius(void) const {
+		return body->GetScale().x > body->GetScale().y ? std::max(body->GetScale().x, body->GetScale().z) : std::max(body->GetScale().y, body->GetScale().z);
 	}
 
 

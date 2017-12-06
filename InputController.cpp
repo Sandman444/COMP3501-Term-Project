@@ -55,6 +55,9 @@ namespace game {
 		if (keyPressed[GLFW_KEY_L]) {
 			controlledHelicopter->turnRight();
 		}
+		if (keyPressed[GLFW_KEY_F]) {
+			controlledHelicopter->fireMissile();
+		}
 	}
 
 	void InputController::control(Helicopter *helicopter) {

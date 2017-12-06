@@ -24,7 +24,7 @@ namespace game {
         public:
             // Create scene node from given resources
 			SceneNode(const std::string name);
-            SceneNode(const std::string name, std::string object_name, std::string material_name, ResourceManager* resman);
+            SceneNode(const std::string name, std::string object_name, std::string material_name);
 
             // Destructor
             ~SceneNode();
@@ -36,6 +36,7 @@ namespace game {
             glm::vec3 GetPosition(void) const;
             glm::quat GetOrientation(void) const;
             glm::vec3 GetScale(void) const;
+			virtual float getBoundingSphereRadius(void) const;
 
             // Set node attributes
             void SetPosition(glm::vec3 position);

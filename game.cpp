@@ -21,7 +21,7 @@ float camera_near_clip_distance_g = 0.01;
 float camera_far_clip_distance_g = 1000.0;
 float camera_fov_g = 50.0; // Field-of-view of camera
 const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
-glm::vec3 camera_position_g(0.0, 0.0, 50.0);
+glm::vec3 camera_position_g(0.0, 0.0, 0.0);
 glm::vec3 camera_look_at_g(0.0, 0.0, 0.0);
 glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
@@ -42,9 +42,12 @@ void Game::Init(void){
     InitView();
     InitEventHandlers();
 
+	helicopterProjectileManager.setScene(&scene_);
+
 	// Add updateables
 	updateables.push_back((Updateable*)&scene_);
 	updateables.push_back((Updateable*)&inputController);
+	updateables.push_back((Updateable*)&helicopterProjectileManager);
 
     // Set variables
     animating_ = true;
@@ -115,13 +118,12 @@ void Game::InitEventHandlers(void){
 
 
 void Game::SetupResources(void){
-
-	resman_.CreateCylinder("CylinderMesh");
-    resman_.CreateCube("CubeMesh");
+	ResourceManager::theResourceManager().CreateCylinder("CylinderMesh");
+	ResourceManager::theResourceManager().CreateCube("CubeMesh");
 
     // Load material
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
-    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
+	ResourceManager::theResourceManager().LoadResource(Material, "ObjectMaterial", filename.c_str());
 }
 
 
@@ -130,22 +132,22 @@ void Game::SetupScene(void){
     // Set background color for the scene
     scene_.SetBackgroundColor(viewport_background_color_g);
 
-
-
-	helicopter = new Helicopter(&resman_);
+	helicopter = new Helicopter(&helicopterProjectileManager);
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
-	/*Helicopter *otherCopter = new Helicopter(&resman_);
-	scene_.addNode(otherCopter);*/
-	turret = new Turret(&resman_);
+  turret = new Turret(&resman_);
 	turret->SetPosition(glm::vec3(0.0, 0.0, 0.0));
 	scene_.addNode(turret);
 	/*tank = new Tank(&resman_);
 	tank->SetPosition(glm::vec3(0.0, 0.0, 0.0));
 	scene_.addNode(tank);*/
+	Helicopter *otherCopter = new Helicopter(&helicopterProjectileManager);
+	scene_.addNode(otherCopter);
+	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
+	helicopterProjectileManager.addCollideable(otherCopter);
 }
 
 
