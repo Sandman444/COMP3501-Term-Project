@@ -14,10 +14,11 @@
 #include "scene_graph.h"
 #include "resource_manager.h"
 #include "camera.h"
+
 #include "Helicopter.h"
 #include "Tank.h"
 #include "Turret.h"
-
+#include "Ground.h"
 
 namespace game {
 
@@ -55,8 +56,9 @@ namespace game {
 
 			//Game Objects
 			Helicopter *helicopter;
-			Turret *turret;
 			Tank *tank;
+			Turret *turret;
+			Ground *ground;
 
             // Flag to turn animation on/off
             bool animating_;

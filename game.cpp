@@ -118,6 +118,7 @@ void Game::SetupResources(void){
 
 	resman_.CreateCylinder("CylinderMesh");
     resman_.CreateCube("CubeMesh");
+	resman_.CreateWall("WallMesh");
 
     // Load material
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
@@ -130,23 +131,29 @@ void Game::SetupScene(void){
     // Set background color for the scene
     scene_.SetBackgroundColor(viewport_background_color_g);
 
+
+
 	helicopter = new Helicopter(&resman_);
-	helicopter->SetPosition(glm::vec3(0.0, 0.0, 45.0));
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
-	/*tank = new Tank(&resman_);
-	scene_.addNode(tank);
-	turret->SetPosition(helicopter->GetPosition() + helicopter->getForward());*/
-	/*turret = new Turret(&resman_);
-	scene_.addNode(turret);
-	turret->SetPosition(helicopter->GetPosition() + helicopter->getForward());*/
-	Helicopter *otherCopter = new Helicopter(&resman_);
-	scene_.addNode(otherCopter);
-	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
+	//setup the ground node
+	ground = new Ground("WallMesh", "ObjectMaterial", &resman_);
+	ground->SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(1.0, 0, 0.0)));
+	ground->SetScale(glm::vec3(100.0, 20.0, 1.0));
+	ground->Translate(glm::vec3(0.0, -1.5, 0.0));
+	scene_.addNode(ground);
 
+	/*Helicopter *otherCopter = new Helicopter(&resman_);
+	scene_.addNode(otherCopter);*/
+	/*turret = new Turret(&resman_);
+	turret->SetPosition(glm::vec3(0.0, 0.0, 0.0));
+	scene_.addNode(turret);*/
+	/*tank = new Tank(&resman_);
+	tank->SetPosition(glm::vec3(0.0, 0.0, 0.0));
+	scene_.addNode(tank);*/
 }
 
 

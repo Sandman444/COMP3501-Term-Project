@@ -7,7 +7,6 @@
 #include "Turret.h"
 
 namespace game {
-
 	Turret::Turret(ResourceManager* resman) : DirectionalSceneNode("turret", "", "", resman) {
 		body = new SceneNode("turret_body", "CubeMesh", "ObjectMaterial", resman);
 		gun_housing = new SceneNode("turret_gun_housing", "CylinderMesh", "ObjectMaterial", resman);
@@ -25,14 +24,13 @@ namespace game {
 		body->addChild(gun_housing);
 
 		// Set up barrel
-		barrel->SetScale(glm::vec3(gunScale.x / 3, gunScale.y*2, gunScale.z / 3));
+		barrel->SetScale(glm::vec3(gunScale.x / 3, gunScale.y * 2, gunScale.z / 3));
 		glm::vec3 barrelScale = barrel->GetScale();
-		barrel->SetPosition(glm::vec3(0, -gunScale.y/4, 0));
+		barrel->SetPosition(glm::vec3(0, -gunScale.y / 4, 0));
 		barrel->SetOrientation(glm::angleAxis(-glm::pi<float>() / 3.0f, glm::vec3(0, 0, 1.0)));
 		gun_housing->addChild(barrel);
 	}
-
-
+	
 	Turret::~Turret() {
 		delete body, gun_housing, barrel;
 	}
@@ -46,8 +44,6 @@ namespace game {
 	}
 
 	void Turret::Update(void) {
-		
+
 	}
-
-
-} // namespace game
+}
