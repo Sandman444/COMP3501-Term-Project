@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <iostream>
+#include <glm/gtx/intersect.hpp>
 
 #include "scene_graph.h"
 #include "ProjectileManager.h"
@@ -45,6 +46,12 @@ namespace game {
 				projectile = projectiles.erase(projectile); // Remove from projectiles list
 			}
 		}
+
+		for (std::vector<SceneNode*>::iterator collideable = collideables.begin(); collideable != collideables.end(); ++collideable) {
+			if (laserOn && glm::intersectLineSphere(laserStart, laserEnd, (*collideable)->GetPosition(), (*collideable)->getBoundingSphereRadius(), glm::vec3(1.0), glm::vec3(1.0))) {
+				std::cout << "coll" << std::endl;
+			}
+		}
 	}
 
 	bool ProjectileManager::sphereCollision(SceneNode *projectile, SceneNode *collideable) {
@@ -69,6 +76,18 @@ namespace game {
 
 	void ProjectileManager::addCollideable(SceneNode *collideable) {
 		collideables.push_back(collideable);
+	}
+
+	void ProjectileManager::setLaserStart(glm::vec3 point) {
+		laserStart = point;
+	}
+
+	void ProjectileManager::setLaserEnd(glm::vec3 point) {
+		laserEnd = point;
+	}
+
+	void ProjectileManager::setLaserOn(bool on) {
+		laserOn = on;
 	}
 
 
