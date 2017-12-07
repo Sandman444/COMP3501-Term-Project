@@ -109,11 +109,14 @@ SceneNode::~SceneNode(){
 }
 
 
-const std::string SceneNode::GetName(void) const {
+std::string SceneNode::GetName(void){
 
     return name_;
 }
 
+void SceneNode::setName(std::string newName) {
+	name_ = newName;
+}
 
 glm::vec3 SceneNode::GetPosition(void) const {
 

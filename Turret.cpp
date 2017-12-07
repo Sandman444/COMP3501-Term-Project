@@ -44,6 +44,6 @@ namespace game {
 	}
 
 	void Turret::Update(void) {
-
+		
 	}
 }

@@ -18,6 +18,7 @@ namespace game {
 
 		void turnLeft();
 		void turnRight();
+		void follow(DirectionalSceneNode* player);
 
 	private:
 		SceneNode *body, *gun_housing, *barrel;

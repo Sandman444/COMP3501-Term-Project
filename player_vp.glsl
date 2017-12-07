@@ -19,8 +19,8 @@ out vec3 light_pos1;
 out vec3 light_pos2;
 
 // Material attributes (constants)
-uniform vec3 light_position1 = vec3(2.0, 10.0, -2.0);
-uniform vec3 light_position2 = vec3(-2.0, 0.0, 2.0);
+uniform vec3 light_position1 = vec3(4.0, 15.0, -4.0);
+uniform vec3 light_position2 = vec3(0.0, 0.0, 1.0);
 
 void main()
 {

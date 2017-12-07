@@ -10,6 +10,7 @@ namespace game {
 
 	Helicopter::Helicopter(bool isPlayer, ResourceManager* resman) : DirectionalSceneNode("helicopter", "", "", "",resman) {
 		if (isPlayer == true) {
+			this->setName("Player");
 			body = new SceneNode("helicopter_body", "CubeMesh", "PlayerMaterial", "", resman);
 			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "PlayerMaterial", "", resman);
 			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "PlayerMaterial", "", resman);
@@ -25,7 +26,6 @@ namespace game {
 			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "", resman);
 			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "", resman);
 		}
-		
 
 		// Set up body
 		body->SetScale(glm::vec3(0.42, 0.15, 0.15));
