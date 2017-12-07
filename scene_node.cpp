@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <time.h>
-#include <algorithm>
+
 
 #include "camera.h"
 #include "scene_node.h"
@@ -88,6 +88,9 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 
 
 SceneNode::~SceneNode(){
+	for (std::vector<SceneNode*>::iterator i = children_.begin(); i != children_.end(); ++i) {
+		delete *i;
+	}
 }
 
 float SceneNode::getBoundingSphereRadius(void) const {
@@ -267,6 +270,16 @@ void SceneNode::addChild(SceneNode *node){
 
     children_.push_back(node);
     node->parent_ = this;
+}
+
+void SceneNode::removeChild(std::string nodeName) {
+	for (std::vector<SceneNode*>::iterator i = children_.begin(); i != children_.end(); ++i) {
+		if ((*i)->GetName() == nodeName) {
+			delete *i;
+			children_.erase(i);
+			return;
+		}
+	}
 }
 
 

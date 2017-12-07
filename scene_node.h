@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #define GLM_FORCE_RADIANS
 #include <glm/gtc/quaternion.hpp>
+#include <algorithm>
 
 #include "GameException.h"
 #include "resource_manager.h"
@@ -38,6 +39,7 @@ namespace game {
             glm::vec3 GetScale(void) const;
 			virtual float getBoundingSphereRadius(void) const;
 
+
             // Set node attributes
             void SetPosition(glm::vec3 position);
             void SetOrientation(glm::quat orientation);
@@ -64,8 +66,13 @@ namespace game {
 
             // Hierarchy-related methods
             void addChild(SceneNode *node);
+			void removeChild(std::string nodeName);
             std::vector<SceneNode *>::const_iterator children_begin() const;
             std::vector<SceneNode *>::const_iterator children_end() const;
+
+			inline SceneNode *getParent() {
+				return parent_;
+			}
 
 		protected:
 			glm::vec3 position_; // Position of node
