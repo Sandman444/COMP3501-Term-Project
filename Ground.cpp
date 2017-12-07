@@ -7,7 +7,7 @@
 #include "Ground.h"
 
 namespace game{
-	Ground::Ground(std::string object_name, std::string material_name, ResourceManager* resman) : DirectionalSceneNode("helicopter", object_name, material_name, resman) {
+	Ground::Ground(std::string object_name, std::string material_name, std::string texture_name, ResourceManager* resman) : DirectionalSceneNode("helicopter", object_name, material_name, texture_name, resman) {
 	
 	}
 	Ground::~Ground(){}

@@ -9,7 +9,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Helicopter(ResourceManager* resman);
+		Helicopter(bool isPlayer, ResourceManager* resman);
 
 		// Destructor
 		~Helicopter();

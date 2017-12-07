@@ -8,17 +8,29 @@
 
 namespace game {
 
-	Helicopter::Helicopter(ResourceManager* resman) : DirectionalSceneNode("helicopter", "", "", resman) {
-		body = new SceneNode("helicopter_body", "CubeMesh", "ObjectMaterial", resman);
-		cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "ObjectMaterial", resman);
-		rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "ObjectMaterial", resman);
-		rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", resman);
-		tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", resman);
-		tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", resman);
+	Helicopter::Helicopter(bool isPlayer, ResourceManager* resman) : DirectionalSceneNode("helicopter", "", "", "",resman) {
+		if (isPlayer == 0) {
+			body = new SceneNode("helicopter_body", "CubeMesh", "PlayerMaterial", "", resman);
+			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "PlayerMaterial", "", resman);
+			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "PlayerMaterial", "", resman);
+			rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "", resman);
+			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "", resman);
+			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "", resman);
+		}
+		else {
+			body = new SceneNode("helicopter_body", "CubeMesh", "EnemyMaterial", "", resman);
+			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "EnemyMaterial", "", resman);
+			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "EnemyMaterial", "", resman);
+			rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "", resman);
+			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "", resman);
+			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "", resman);
+		}
+		
 
 		// Set up body
 		body->SetScale(glm::vec3(0.42, 0.15, 0.15));
 		glm::vec3 bodyScale = body->GetScale();
+		body->Translate(glm::vec3(0.0, bodyScale.y*4, 0.0));
 		this->addChild(body);
 
 		// Set up cockpit

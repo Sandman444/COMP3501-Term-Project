@@ -42,9 +42,13 @@ void ResourceManager::LoadResource(ResourceType type, const std::string name, co
     // Call appropriate method depending on type of resource
     if (type == Material){
         LoadMaterial(name, filename);
-    } else {
-        throw(std::invalid_argument(std::string("Invalid type of resource")));
     }
+	else if (type == Texture) {
+		LoadTexture(name, filename);
+	}
+	else {
+		throw(std::invalid_argument(std::string("Invalid type of resource")));
+	}
 }
 
 
@@ -146,6 +150,18 @@ std::string ResourceManager::LoadTextFile(const char *filename){
     return content;
 }
 
+void ResourceManager::LoadTexture(const std::string name, const char *filename) {
+
+	// Load texture from file
+	std::cout << "Loading a texture" << std::endl;
+	GLuint texture = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
+	if (!texture) {
+		throw(std::ios_base::failure(std::string("Error loading texture ") + std::string(filename) + std::string(": ") + std::string(SOIL_last_result())));
+	}
+
+	// Create resource
+	AddResource(Texture, name, texture, 0);
+}
 
 void ResourceManager::CreateTorus(std::string object_name, float loop_radius, float circle_radius, int num_loop_samples, int num_circle_samples){
 

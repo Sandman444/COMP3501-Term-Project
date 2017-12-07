@@ -14,7 +14,7 @@ namespace game {
 	public:
 		
 		DirectionalSceneNode(const std::string name);
-		DirectionalSceneNode(const std::string name, std::string object_name, std::string material_name, ResourceManager* resman);
+		DirectionalSceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name, ResourceManager* resman);
 
 		// Get relative attributes of node
 		glm::vec3 getForward(void) const;

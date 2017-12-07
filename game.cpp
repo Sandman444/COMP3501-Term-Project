@@ -120,9 +120,17 @@ void Game::SetupResources(void){
     resman_.CreateCube("CubeMesh");
 	resman_.CreateWall("WallMesh");
 
-    // Load material
-    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
-    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
+    // Load materials
+    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground_material");
+    resman_.LoadResource(Material, "GroundMaterial", filename.c_str());
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/player");
+	resman_.LoadResource(Material, "PlayerMaterial", filename.c_str());
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/enemy");
+	resman_.LoadResource(Material, "EnemyMaterial", filename.c_str());
+
+	//Load ground texture
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground.jpg");
+	resman_.LoadResource(Texture, "TronGrid", filename.c_str());
 }
 
 
@@ -131,26 +139,23 @@ void Game::SetupScene(void){
     // Set background color for the scene
     scene_.SetBackgroundColor(viewport_background_color_g);
 
-
-
-	helicopter = new Helicopter(&resman_);
+	helicopter = new Helicopter(true, &resman_);
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
 	//setup the ground node
-	ground = new Ground("WallMesh", "ObjectMaterial", &resman_);
+	ground = new Ground("WallMesh", "GroundMaterial", "TronGrid", &resman_);
 	ground->SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(1.0, 0, 0.0)));
 	ground->SetScale(glm::vec3(100.0, 20.0, 1.0));
-	ground->Translate(glm::vec3(0.0, -1.5, 0.0));
 	scene_.addNode(ground);
 
-	/*Helicopter *otherCopter = new Helicopter(&resman_);
-	scene_.addNode(otherCopter);*/
-	/*turret = new Turret(&resman_);
+	Helicopter *otherCopter = new Helicopter(false, &resman_);
+	scene_.addNode(otherCopter);
+	turret = new Turret(&resman_);
 	turret->SetPosition(glm::vec3(0.0, 0.0, 0.0));
-	scene_.addNode(turret);*/
+	scene_.addNode(turret);
 	/*tank = new Tank(&resman_);
 	tank->SetPosition(glm::vec3(0.0, 0.0, 0.0));
 	scene_.addNode(tank);*/

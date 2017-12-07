@@ -8,12 +8,12 @@
 
 namespace game {
 
-	Tank::Tank(ResourceManager* resman) : DirectionalSceneNode("tank", "", "", resman) {
-		tank_body = new SceneNode("tank_body", "CubeMesh", "ObjectMaterial", resman);
-		gun_turret = new SceneNode("tank_turret", "CubeMesh", "ObjectMaterial", resman);
-		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "ObjectMaterial", resman);
-		tread1 = new SceneNode("tank_tread1", "CubeMesh", "ObjectMaterial", resman);
-		tread2 = new SceneNode("tank_tread2", "CubeMesh", "ObjectMaterial", resman);
+	Tank::Tank(ResourceManager* resman) : DirectionalSceneNode("tank", "", "", "", resman) {
+		tank_body = new SceneNode("tank_body", "CubeMesh", "EnemyMaterial", "", resman);
+		gun_turret = new SceneNode("tank_turret", "CubeMesh", "EnemyMaterial", "", resman);
+		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "EnemyMaterial", "", resman);
+		tread1 = new SceneNode("tank_tread1", "CubeMesh", "EnemyMaterial", "", resman);
+		tread2 = new SceneNode("tank_tread2", "CubeMesh", "EnemyMaterial", "", resman);
 
 		// Set up body
 		tank_body->SetScale(glm::vec3(0.2, 0.04, 0.2));

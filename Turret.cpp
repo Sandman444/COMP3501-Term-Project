@@ -7,10 +7,10 @@
 #include "Turret.h"
 
 namespace game {
-	Turret::Turret(ResourceManager* resman) : DirectionalSceneNode("turret", "", "", resman) {
-		body = new SceneNode("turret_body", "CubeMesh", "ObjectMaterial", resman);
-		gun_housing = new SceneNode("turret_gun_housing", "CylinderMesh", "ObjectMaterial", resman);
-		barrel = new SceneNode("turret_barrel", "CylinderMesh", "ObjectMaterial", resman);
+	Turret::Turret(ResourceManager* resman) : DirectionalSceneNode("turret", "", "", "", resman) {
+		body = new SceneNode("turret_body", "CubeMesh", "EnemyMaterial", "", resman);
+		gun_housing = new SceneNode("turret_gun_housing", "CylinderMesh", "EnemyMaterial", "", resman);
+		barrel = new SceneNode("turret_barrel", "CylinderMesh", "EnemyMaterial", "", resman);
 
 		// Set up body
 		body->SetScale(glm::vec3(0.2, 0.04, 0.2));
