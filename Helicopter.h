@@ -1,7 +1,10 @@
 #ifndef HELICOPTER_H 
 #define HELICOPTER_H
 
+
 #include "DirectionalSceneNode.h"
+#include "ProjectileManager.h"
+#include "Laser.h"
 
 namespace game {
 
@@ -9,7 +12,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Helicopter(bool isPlayer, ResourceManager* resman);
+		Helicopter(ProjectileManager *manager, bool isPlayer);
 
 		// Destructor
 		~Helicopter();
@@ -24,11 +27,20 @@ namespace game {
 		void moveBackward();
 		void turnLeft();
 		void turnRight();
+		void fireMissile();
+		void dropBomb();
+		void fireLaser();
+
+		float getBoundingSphereRadius(void) const override;
 
 	private:
 
+		ProjectileManager *projectileManager;
+
 		SceneNode *body, *cockpit, *rotorbladeJoint, *rotorBlade, *tail, *tailBlade;
 
+		Laser laser;
+    
 		glm::vec3 velocity;
 		glm::vec3 accelerationDirection;
 		float accelerationSpeed;
@@ -44,6 +56,12 @@ namespace game {
 		float tiltFriction;
 		float airFriction;
 		float levelingForce;
+
+		double lastMissileFire = 0;
+		double missileFireInterval = 0.5;
+
+		double lastBombDrop = 0;
+		double bombDropInterval = 0.5;
 	};
 
 } // namespace game

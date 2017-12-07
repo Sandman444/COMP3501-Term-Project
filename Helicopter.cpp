@@ -8,30 +8,32 @@
 
 namespace game {
 
-	Helicopter::Helicopter(bool isPlayer, ResourceManager* resman) : DirectionalSceneNode("helicopter", "", "", "",resman) {
+	Helicopter::Helicopter(ProjectileManager *manager, bool isPlayer) : DirectionalSceneNode("helicopter", "", "", "") {
 		if (isPlayer == true) {
 			this->setName("Player");
-			body = new SceneNode("helicopter_body", "CubeMesh", "PlayerMaterial", "", resman);
-			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "PlayerMaterial", "", resman);
-			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "PlayerMaterial", "", resman);
-			rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "", resman);
-			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "", resman);
-			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "", resman);
+			body = new SceneNode("helicopter_body", "CubeMesh", "PlayerMaterial", "");
+			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "PlayerMaterial", "");
+			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "PlayerMaterial", "");
+			rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "");
+			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "");
+			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "");
 		}
 		else {
-			body = new SceneNode("helicopter_body", "CubeMesh", "EnemyMaterial", "", resman);
-			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "EnemyMaterial", "", resman);
-			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "EnemyMaterial", "", resman);
-			rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "", resman);
-			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "", resman);
-			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "", resman);
+			body = new SceneNode("helicopter_body", "CubeMesh", "EnemyMaterial", "");
+			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "EnemyMaterial", "");
+			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "EnemyMaterial", "");
+			rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "");
+			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "");
+			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "");
 		}
 
 		// Set up body
 		body->SetScale(glm::vec3(0.42, 0.15, 0.15));
 		glm::vec3 bodyScale = body->GetScale();
-		body->Translate(glm::vec3(0.0, bodyScale.y*4, 0.0));
 		this->addChild(body);
+
+		// Attach laser
+		body->addChild(&laser);
 
 		// Set up cockpit
 		cockpit->SetScale(glm::vec3(bodyScale.y / 2.0, bodyScale.y / 2.0, bodyScale.z));
@@ -118,6 +120,27 @@ namespace game {
 		turnDirection += -1;
 	}
 
+	void Helicopter::fireMissile() {
+		double currentTime = glfwGetTime();
+		if (currentTime - lastMissileFire > missileFireInterval) {
+			lastMissileFire = currentTime;
+			projectileManager->spawnMissile(GetPosition(), getForward(), GetOrientation());
+		}
+	}
+
+	void Helicopter::dropBomb() {
+		double currentTime = glfwGetTime();
+		if (currentTime - lastBombDrop > bombDropInterval) {
+			lastBombDrop = currentTime;
+			projectileManager->spawnBomb(GetPosition());
+		}
+	}
+
+	void Helicopter::fireLaser() {
+		laser.on();
+		projectileManager->setLaserOn(laser.isOn());
+	}
+
 	void Helicopter::Update(void) {
 
 		// Up down left right acceleration
@@ -169,6 +192,16 @@ namespace game {
 		float rot_factor(glm::pi<float>() / 10);
 		rotorBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(1, 0, 0)));
 		tailBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(0, 0, 1)));
+
+		// Update laser
+		projectileManager->setLaserStart(GetPosition());
+		projectileManager->setLaserEnd(getForward() * laser.getLength());
+		laser.off();
+		projectileManager->setLaserOn(laser.isOn());
+	}
+
+	float Helicopter::getBoundingSphereRadius(void) const {
+		return body->GetScale().x > body->GetScale().y ? std::max(body->GetScale().x, body->GetScale().z) : std::max(body->GetScale().y, body->GetScale().z);
 	}
 
 

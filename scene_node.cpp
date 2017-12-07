@@ -22,12 +22,13 @@ SceneNode::SceneNode(const std::string name) {
 	parent_ = NULL;
 }
 
-SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name, ResourceManager* resman){
+
+SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name){
 
 	// Get resources
 	Resource *geom;
 	if (object_name != std::string("")) {
-		geom = resman->GetResource(object_name);
+		geom = ResourceManager::theResourceManager().GetResource(object_name);
 		if (!geom) {
 			throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\"")));
 		}
@@ -38,7 +39,7 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 
 	Resource *mat;
 	if (material_name != std::string("")) {
-		mat = resman->GetResource(material_name);
+		mat = ResourceManager::theResourceManager().GetResource(material_name);
 		if (!mat) {
 			throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
 		}
@@ -46,10 +47,10 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 	else {
 		mat = NULL;
 	}
-
+  
 	Resource *tex;
 	if (texture_name != std::string("")) {
-		tex = resman->GetResource(texture_name);
+		tex = ResourceManager::theResourceManager().GetResource(texture_name);
 		if (!tex) {
 			throw(GameException(std::string("Could not find resource \"") + texture_name + std::string("\"")));
 		}
@@ -106,6 +107,13 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 
 
 SceneNode::~SceneNode(){
+	for (std::vector<SceneNode*>::iterator i = children_.begin(); i != children_.end(); ++i) {
+		delete *i;
+	}
+}
+
+float SceneNode::getBoundingSphereRadius(void) const {
+	return GetScale().x > GetScale().y ? std::max(GetScale().x, GetScale().z) : std::max(GetScale().y, GetScale().z);
 }
 
 
@@ -269,7 +277,7 @@ glm::mat4 SceneNode::SetupShader(GLuint program, glm::mat4 parent_transf){
 
     GLint world_mat = glGetUniformLocation(program, "world_mat");
     glUniformMatrix4fv(world_mat, 1, GL_FALSE, glm::value_ptr(local_transf));
-
+  
 	// Normal matrix
 	glm::mat4 normal_matrix = glm::transpose(glm::inverse(transf));
 	GLint normal_mat = glGetUniformLocation(program, "normal_mat");
@@ -301,6 +309,17 @@ void SceneNode::addChild(SceneNode *node){
 
     children_.push_back(node);
     node->parent_ = this;
+}
+
+
+void SceneNode::removeChild(std::string nodeName) {
+	for (std::vector<SceneNode*>::iterator i = children_.begin(); i != children_.end(); ++i) {
+		if ((*i)->GetName() == nodeName) {
+			delete *i;
+			children_.erase(i);
+			return;
+		}
+	}
 }
 
 

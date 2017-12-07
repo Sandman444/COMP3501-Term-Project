@@ -9,7 +9,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Turret(ResourceManager* resman);
+		Turret();
 
 		// Destructor
 		~Turret();
@@ -19,6 +19,7 @@ namespace game {
 		void turnLeft();
 		void turnRight();
 		void follow(DirectionalSceneNode* player);
+    float getBoundingSphereRadius(void) const override;
 
 	private:
 		SceneNode *body, *gun_housing, *barrel;

@@ -8,12 +8,12 @@
 
 namespace game {
 
-	Tank::Tank(ResourceManager* resman) : DirectionalSceneNode("tank", "", "", "", resman) {
-		tank_body = new SceneNode("tank_body", "CubeMesh", "EnemyMaterial", "", resman);
-		gun_turret = new SceneNode("tank_turret", "CubeMesh", "EnemyMaterial", "", resman);
-		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "EnemyMaterial", "", resman);
-		tread1 = new SceneNode("tank_tread1", "CubeMesh", "EnemyMaterial", "", resman);
-		tread2 = new SceneNode("tank_tread2", "CubeMesh", "EnemyMaterial", "", resman);
+	Tank::Tank() : DirectionalSceneNode("tank", "", "", "") {
+		tank_body = new SceneNode("tank_body", "CubeMesh", "EnemyMaterial", "");
+		gun_turret = new SceneNode("tank_turret", "CubeMesh", "EnemyMaterial", "");
+		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "EnemyMaterial", "");
+		tread1 = new SceneNode("tank_tread1", "CubeMesh", "EnemyMaterial", "");
+		tread2 = new SceneNode("tank_tread2", "CubeMesh", "EnemyMaterial", "");
 
 		// Set up body
 		tank_body->SetPosition(glm::vec3(0.0, 0.0, 0.0));
@@ -51,10 +51,6 @@ namespace game {
 		glm::vec3 tread2Scale = tread2->GetScale();
 		tread2->SetPosition(glm::vec3(0, 0, tankBodyScale.z / 2));
 		tank_body->addChild(tread2);
-
-		// Set initial forward and side vectors
-		forward_ = glm::vec3(-1, 0, 0);
-		side_ = glm::vec3(0, 0, 1);
 	}
 
 
@@ -62,20 +58,21 @@ namespace game {
 		delete tank_body, gun_turret, gun_barrel, tread1, tread2;
 	}
 
+
 	void Tank::moveForward() {
-	accelerationDirection += glm::vec3(getForward().x, 0, getForward().z);
+	  accelerationDirection += glm::vec3(getForward().x, 0, getForward().z);
 	}
 
 	void Tank::moveBackward() {
-	accelerationDirection += -glm::vec3(getForward().x, 0, getForward().z);
+	  accelerationDirection += -glm::vec3(getForward().x, 0, getForward().z);
 	}
 
 	void Tank::moveLeft() {
-	accelerationDirection += glm::vec3(getSide().x, 0, getSide().z);
+	  accelerationDirection += glm::vec3(getSide().x, 0, getSide().z);
 	}
 
 	void Tank::moveRight() {
-	accelerationDirection += -glm::vec3(getSide().x, 0, getSide().z);
+	  accelerationDirection += -glm::vec3(getSide().x, 0, getSide().z);
 	}
 
 	void Tank::turnLeft() {
@@ -85,6 +82,10 @@ namespace game {
 	void Tank::turnRight() {
 		turnDirection += -1;
 	}
+
+	float Tank::getBoundingSphereRadius(void) const {
+		return tank_body->GetScale().x > tank_body->GetScale().y ? std::max(tank_body->GetScale().x, tank_body->GetScale().z) : std::max(tank_body->GetScale().y, tank_body->GetScale().z);
+  }
 
 	void Tank::Update(SceneNode* player) {
 		//find position of player and self

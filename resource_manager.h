@@ -20,9 +20,15 @@ namespace game {
     class ResourceManager {
 
         public:
-            // Generic methods
-            ResourceManager(void);
-            ~ResourceManager();
+
+			// Singleton Manager
+			inline static ResourceManager & theResourceManager() {
+				static ResourceManager resourceManager;
+				return resourceManager;
+			}
+			ResourceManager(ResourceManager const&) = delete;
+			void operator=(ResourceManager const&) = delete;
+
             // Add a resource that was already loaded and allocated to memory
             void AddResource(ResourceType type, const std::string name, GLuint resource, GLsizei size);
             void AddResource(ResourceType type, const std::string name, GLuint array_buffer, GLuint element_array_buffer, GLsizei size);
@@ -40,10 +46,11 @@ namespace game {
             void CreateCube(std::string object_name);
 			// Create Cylinder
 			void CreateCylinder(std::string object_name, float cylinder_radius = 0.5, float cylinder_height = 1.0, int num_cylinder_samples = 90);
-			//Create Wall
 			void CreateWall(std::string object_name);
 
         private:
+			ResourceManager() {};
+
             // List storing all resources
             std::unordered_map<std::string, Resource*> resource_; 
  
