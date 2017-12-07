@@ -16,10 +16,10 @@ namespace game {
 
 		void Update(SceneNode* player);
 
-		/*void moveLeft();
+		void moveLeft();
 		void moveRight();
 		void moveForward();
-		void moveBackward();*/
+		void moveBackward();
 		void turnLeft();
 		void turnRight();
 

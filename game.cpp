@@ -153,12 +153,37 @@ void Game::SetupScene(void){
 
 	Helicopter *otherCopter = new Helicopter(false, &resman_);
 	scene_.addNode(otherCopter);
-	turret = new Turret(&resman_);
-	turret->SetPosition(glm::vec3(0.0, 0.0, 0.0));
-	scene_.addNode(turret);
-	/*tank = new Tank(&resman_);
-	tank->SetPosition(glm::vec3(0.0, 0.0, 0.0));
-	scene_.addNode(tank);*/
+	
+	//turrets
+	turret1 = new Turret(&resman_);
+	turret1->SetPosition(glm::vec3(-3.0, 0.0, 3.0));
+	scene_.addNode(turret1);
+	turret2 = new Turret(&resman_);
+	turret2->SetPosition(glm::vec3(-2.0, 0.0, 1.0));
+	scene_.addNode(turret2);
+	turret3 = new Turret(&resman_);
+	turret3->SetPosition(glm::vec3(-4.0, 0.0, -1.5));
+	scene_.addNode(turret3);
+	turret4 = new Turret(&resman_);
+	turret4->SetPosition(glm::vec3(-4.0, 0.0, 1.5));
+	scene_.addNode(turret4);
+	turret5 = new Turret(&resman_);
+	turret5->SetPosition(glm::vec3(0.5, 0.0, -0.5));
+	scene_.addNode(turret5);
+
+	//add tanks
+	tank1 = new Tank(&resman_);
+	tank1->SetPosition(glm::vec3(-10.0, 0.0, 2.0));
+	scene_.addNode(tank1);
+	tank2 = new Tank(&resman_);
+	tank2->SetPosition(glm::vec3(-30.0, 0.0, -0.5));
+	scene_.addNode(tank2);
+	tank3 = new Tank(&resman_);
+	tank3->SetPosition(glm::vec3(-20.0, 0.0, 1.0));
+	scene_.addNode(tank3);
+	tank4 = new Tank(&resman_);
+	tank4->SetPosition(glm::vec3(-15.0, 0.0, -1.0));
+	scene_.addNode(tank4);
 }
 
 

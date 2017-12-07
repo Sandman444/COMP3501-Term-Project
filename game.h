@@ -56,8 +56,8 @@ namespace game {
 
 			//Game Objects
 			Helicopter *helicopter;
-			Tank *tank;
-			Turret *turret;
+			Tank *tank1, *tank2, *tank3, *tank4;
+			Turret *turret1, *turret2, *turret3, *turret4, *turret5;
 			Ground *ground;
 
             // Flag to turn animation on/off

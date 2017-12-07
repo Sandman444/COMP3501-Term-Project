@@ -11,10 +11,10 @@ namespace game {
 		body = new SceneNode("turret_body", "CubeMesh", "EnemyMaterial", "", resman);
 		gun_housing = new SceneNode("turret_gun_housing", "CylinderMesh", "EnemyMaterial", "", resman);
 		barrel = new SceneNode("turret_barrel", "CylinderMesh", "EnemyMaterial", "", resman);
-		this->SetPosition(glm::vec3(-5.0, 0.0, 0.0));
 		//std::cout << "Current position: (" << this->GetPosition().x << ", " << this->GetPosition().y << ", " << this->GetPosition().z << ") " << std::endl;
 
 		// Set up body
+		body->SetPosition(glm::vec3(0.0, 0.0, 0.0));
 		body->SetScale(glm::vec3(0.2, 0.04, 0.2));
 		glm::vec3 bodyScale = body->GetScale();
 		this->addChild(body);
@@ -51,14 +51,14 @@ namespace game {
 
 	void Turret::Update(SceneNode* player) {
 		//std::cout << "Player position: (" << player->GetPosition().x<<", " << player->GetPosition().y << ", " << player->GetPosition().z << ") " << std::endl;
-		std::cout << "Current position: (" << this->GetPosition().x << ", " << this->GetPosition().y << ", " << this->GetPosition().z << ") " << std::endl;
+		//std::cout << "Current position: (" << body->GetPosition().x << ", " << body->GetPosition().y << ", " << body->GetPosition().z << ") " << std::endl;
 
 		//find position of player and self
 		glm::vec2 playerPos = glm::vec2(player->GetPosition().x, player->GetPosition().z);
-		glm::vec2 currentPos = glm::vec2(this->GetPosition().x, this->GetPosition().z);
+		glm::vec2 currentPos = glm::vec2(body->GetPosition().x, body->GetPosition().z);
 		
 		//find vector between self and player then normalize
-		/*glm::vec2 newDirection = glm::vec2(0, 0);
+		glm::vec2 newDirection = glm::vec2(0, 0);
 		newDirection = currentPos - playerPos;
 		newDirection = glm::normalize(newDirection);
 		glm::vec2 forward = glm::vec2(this->getForward().x, this->getForward().z);
@@ -67,11 +67,13 @@ namespace game {
 		if(newDirection.x != NULL){
 			theta = acos(glm::dot(newDirection, forward) / (glm::length(newDirection) * glm::length(newDirection)));
 		}
-		std::cout << "newDirection position: (" << newDirection.x << ", " << newDirection.y << ") " << std::endl;
-		std::cout << "forward position: (" << forward.x << ", " << forward.y << ") " << std::endl;
-		std::cout << "    angle: " << glm::degrees(theta) << std::endl;
-		*/
+
 		//change the orientation of the turret
-		//gun_housing->Rotate(glm::angleAxis(theta, glm::vec3(0.0, 1.0, 0.0)));
+		if (newDirection.y < 0) {
+			gun_housing->SetOrientation(glm::angleAxis(-theta, glm::vec3(0.0, 1.0, 0.0)));
+		}
+		else {
+			gun_housing->SetOrientation(glm::angleAxis(theta, glm::vec3(0.0, 1.0, 0.0)));
+		}
 	}
 }
