@@ -7,11 +7,10 @@
 #include "Turret.h"
 
 namespace game {
-
-	Turret::Turret() : DirectionalSceneNode("turret", "", "", "") {
-		body = new SceneNode("turret_body", "CubeMesh", "EnemyMaterial", "");
-		gun_housing = new SceneNode("turret_gun_housing", "CylinderMesh", "EnemyMaterial", "");
-		barrel = new SceneNode("turret_barrel", "CylinderMesh", "EnemyMaterial", "");
+	Turret::Turret(ResourceManager* resman) : DirectionalSceneNode("turret", "", "", "", resman) {
+		body = new SceneNode("turret_body", "CubeMesh", "EnemyMaterial", "", resman);
+		gun_housing = new SceneNode("turret_gun_housing", "CylinderMesh", "EnemyMaterial", "", resman);
+		barrel = new SceneNode("turret_barrel", "CylinderMesh", "EnemyMaterial", "", resman);
 		//std::cout << "Current position: (" << this->GetPosition().x << ", " << this->GetPosition().y << ", " << this->GetPosition().z << ") " << std::endl;
 
 		// Set up body
@@ -77,8 +76,4 @@ namespace game {
 			gun_housing->SetOrientation(glm::angleAxis(theta, glm::vec3(0.0, 1.0, 0.0)));
 		}
 	}
-  
-  float Turret::getBoundingSphereRadius(void) const {
-		return body->GetScale().x > body->GetScale().y ? std::max(body->GetScale().x, body->GetScale().z) : std::max(body->GetScale().y, body->GetScale().z);
-  }
 }

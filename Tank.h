@@ -9,7 +9,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Tank();
+		Tank(ResourceManager* resman);
 
 		// Destructor
 		~Tank();
@@ -22,8 +22,6 @@ namespace game {
 		void moveBackward();
 		void turnLeft();
 		void turnRight();
-    
-    float getBoundingSphereRadius(void) const override;
 
 	private:
 		SceneNode *tank_body, *gun_turret, *gun_barrel, *tread1, *tread2;

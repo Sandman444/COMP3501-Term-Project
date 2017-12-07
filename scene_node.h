@@ -9,7 +9,6 @@
 #include <glm/glm.hpp>
 #define GLM_FORCE_RADIANS
 #include <glm/gtc/quaternion.hpp>
-#include <algorithm>
 
 #include "GameException.h"
 #include "resource_manager.h"
@@ -24,9 +23,8 @@ namespace game {
 
         public:
             // Create scene node from given resources
-
 			SceneNode(std::string name);
-       SceneNode(std::string name, std::string object_name, std::string material_name, std::string texture);
+            SceneNode(std::string name, std::string object_name, std::string material_name, std::string texture, ResourceManager* resman);
 
             // Destructor
             ~SceneNode();
@@ -38,8 +36,6 @@ namespace game {
             glm::vec3 GetPosition(void) const;
             glm::quat GetOrientation(void) const;
             glm::vec3 GetScale(void) const;
-
-			virtual float getBoundingSphereRadius(void) const;
 			void setName(std::string newName); //change the name of the node
 
             // Set node attributes
@@ -68,14 +64,8 @@ namespace game {
 
             // Hierarchy-related methods
             void addChild(SceneNode *node);
-
-			void removeChild(std::string nodeName);
             std::vector<SceneNode *>::const_iterator children_begin() const;
             std::vector<SceneNode *>::const_iterator children_end() const;
-
-			inline SceneNode *getParent() {
-				return parent_;
-			}
 
 		protected:
 			glm::vec3 position_; // Position of node
@@ -89,7 +79,7 @@ namespace game {
             GLenum mode_; // Type of geometry
             GLsizei size_; // Number of primitives in geometry
             GLuint material_; // Reference to shader program
-		      	GLuint texture_; //Reference to texture resource
+			GLuint texture_; //Reference to texture resource
 
             // Hierarchy
             SceneNode *parent_;

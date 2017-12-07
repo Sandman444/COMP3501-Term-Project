@@ -21,7 +21,7 @@ float camera_near_clip_distance_g = 0.01;
 float camera_far_clip_distance_g = 1000.0;
 float camera_fov_g = 50.0; // Field-of-view of camera
 const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
-glm::vec3 camera_position_g(0.0, 0.0, 0.0);
+glm::vec3 camera_position_g(0.0, 0.0, 50.0);
 glm::vec3 camera_look_at_g(0.0, 0.0, 0.0);
 glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
@@ -34,6 +34,7 @@ Game::Game(void){
     // Don't do work in the constructor, leave it for the Init() function
 }
 
+
 void Game::Init(void){
 
     // Run all initialization steps
@@ -41,90 +42,14 @@ void Game::Init(void){
     InitView();
     InitEventHandlers();
 
-	helicopterProjectileManager.setScene(&scene_);
-
 	// Add updateables
 	updateables.push_back((Updateable*)&scene_);
 	updateables.push_back((Updateable*)&inputController);
-	updateables.push_back((Updateable*)&helicopterProjectileManager);
 
     // Set variables
     animating_ = true;
 }
 
-       
-void Game::InitWindow(void){
-
-    // Initialize the window management library (GLFW)
-    if (!glfwInit()){
-        throw(GameException(std::string("Could not initialize the GLFW library")));
-    }
-
-    // Create a window and its OpenGL context
-    if (window_full_screen_g){
-        window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), glfwGetPrimaryMonitor(), NULL);
-    } else {
-        window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), NULL, NULL);
-    }
-    if (!window_){
-        glfwTerminate();
-        throw(GameException(std::string("Could not create window")));
-    }
-
-    // Make the window's context the current one
-    glfwMakeContextCurrent(window_);
-
-    // Initialize the GLEW library to access OpenGL extensions
-    // Need to do it after initializing an OpenGL context
-    glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-    if (err != GLEW_OK){
-        throw(GameException(std::string("Could not initialize the GLEW library: ")+std::string((const char *) glewGetErrorString(err))));
-    }
-}
-
-
-void Game::InitView(void){
-
-    // Set up z-buffer
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-
-    // Set viewport
-    int width, height;
-    glfwGetFramebufferSize(window_, &width, &height);
-    glViewport(0, 0, width, height);
-
-	// Set up camera
-	// Set current view
-	camera_.SetView(camera_position_g, camera_look_at_g, camera_up_g);
-	// Set projection
-	camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
-	// Add camera to scene
-	scene_.addNode(&camera_);
-}
-
-
-void Game::InitEventHandlers(void){
-
-    // Set event callbacks
-    glfwSetKeyCallback(window_, KeyCallback);
-    glfwSetFramebufferSizeCallback(window_, ResizeCallback);
-
-    // Set pointer to game object, so that callbacks can access it
-    glfwSetWindowUserPointer(window_, (void *) this);
-}
-
-
-void Game::SetupResources(void){
-	ResourceManager::theResourceManager().CreateCylinder("CylinderMesh");
-	ResourceManager::theResourceManager().CreateCube("CubeMesh");
-	ResourceManager::theResourceManager().CreateSphere("SphereMesh");
-
-    // Load material
-    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
-	ResourceManager::theResourceManager().LoadResource(Material, "ObjectMaterial", filename.c_str());
-}
        
 void Game::InitWindow(void){
 
@@ -212,25 +137,25 @@ void Game::SetupResources(void){
 void Game::SetupScene(void){
 
     // Set background color for the scene
-  scene_.SetBackgroundColor(viewport_background_color_g);
+    scene_.SetBackgroundColor(viewport_background_color_g);
 
-	helicopter = new Helicopter(true, &helicopterProjectileManager);
+	helicopter = new Helicopter(true, &resman_);
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
 	//setup the ground node
-	ground = new Ground("WallMesh", "GroundMaterial", "TronGrid");
+	ground = new Ground("WallMesh", "GroundMaterial", "TronGrid", &resman_);
 	ground->SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(1.0, 0, 0.0)));
 	ground->SetScale(glm::vec3(100.0, 20.0, 1.0));
 	scene_.addNode(ground);
 
-	Helicopter *otherCopter = new Helicopter(false, &helicopterProjectileManager);
+	Helicopter *otherCopter = new Helicopter(false, &resman_);
 	scene_.addNode(otherCopter);
 	
 	//turrets
-	turret1 = new Turret(&resman_);
+	/*turret1 = new Turret(&resman_);
 	turret1->SetPosition(glm::vec3(-3.0, 0.0, 3.0));
 	scene_.addNode(turret1);
 	turret2 = new Turret(&resman_);
@@ -241,7 +166,7 @@ void Game::SetupScene(void){
 	scene_.addNode(turret3);
 	turret4 = new Turret(&resman_);
 	turret4->SetPosition(glm::vec3(-4.0, 0.0, 1.5));
-	scene_.addNode(turret4);
+	scene_.addNode(turret4);*/
 	turret5 = new Turret(&resman_);
 	turret5->SetPosition(glm::vec3(0.5, 0.0, -0.5));
 	scene_.addNode(turret5);
@@ -259,11 +184,6 @@ void Game::SetupScene(void){
 	tank4 = new Tank(&resman_);
 	tank4->SetPosition(glm::vec3(-15.0, 0.0, -1.0));
 	scene_.addNode(tank4);
-  
-  
-  //helicopterProjectileManager.addCollideable(otherCopter);
-	//helicopterProjectileManager.addCollideable(turret);
-	//helicopterProjectileManager.addCollideable(tank);
 }
 
 
