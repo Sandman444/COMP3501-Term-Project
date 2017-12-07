@@ -4,6 +4,7 @@
 
 #include "DirectionalSceneNode.h"
 #include "ProjectileManager.h"
+#include "Laser.h"
 
 namespace game {
 
@@ -28,6 +29,7 @@ namespace game {
 		void turnRight();
 		void fireMissile();
 		void dropBomb();
+		void fireLaser();
 
 		float getBoundingSphereRadius(void) const override;
 
@@ -36,6 +38,8 @@ namespace game {
 		ProjectileManager *projectileManager;
 
 		SceneNode *body, *cockpit, *rotorbladeJoint, *rotorBlade, *tail, *tailBlade;
+
+		Laser laser;
 
 		glm::vec3 velocity;
 		glm::vec3 accelerationDirection;

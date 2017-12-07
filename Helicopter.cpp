@@ -24,6 +24,9 @@ namespace game {
 		glm::vec3 bodyScale = body->GetScale();
 		this->addChild(body);
 
+		// Attach laser
+		body->addChild(&laser);
+
 		// Set up cockpit
 		cockpit->SetScale(glm::vec3(bodyScale.y / 2.0, bodyScale.y / 2.0, bodyScale.z));
 		glm::vec3 cockpitScale = cockpit->GetScale();
@@ -125,6 +128,11 @@ namespace game {
 		}
 	}
 
+	void Helicopter::fireLaser() {
+		laser.on();
+		projectileManager->setLaserOn(laser.isOn());
+	}
+
 	void Helicopter::Update(void) {
 
 		// Up down left right acceleration
@@ -176,6 +184,12 @@ namespace game {
 		float rot_factor(glm::pi<float>() / 10);
 		rotorBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(1, 0, 0)));
 		tailBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(0, 0, 1)));
+
+		// Update laser
+		projectileManager->setLaserStart(GetPosition());
+		projectileManager->setLaserEnd(getForward() * laser.getLength());
+		laser.off();
+		projectileManager->setLaserOn(laser.isOn());
 	}
 
 	float Helicopter::getBoundingSphereRadius(void) const {
