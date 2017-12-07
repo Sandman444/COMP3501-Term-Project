@@ -18,7 +18,7 @@
 #include "Helicopter.h"
 #include "Tank.h"
 #include "Turret.h"
-
+#include "Ground.h"
 
 namespace game {
 
@@ -51,13 +51,18 @@ namespace game {
 			// Helicopter projectile manager
 			ProjectileManager helicopterProjectileManager;
 
+			// Input controller
+			InputController inputController;
+
             // Camera abstraction
             Camera camera_;
 
 			//Game Objects
 			Helicopter *helicopter;
-			Tank *tank;
-			Turret *turret;
+
+			Tank *tank1, *tank2, *tank3, *tank4;
+			Turret *turret1, *turret2, *turret3, *turret4, *turret5;
+			Ground *ground;
 
             // Flag to turn animation on/off
             bool animating_;

@@ -8,16 +8,24 @@
 
 namespace game {
 
-	Helicopter::Helicopter(ProjectileManager *manager) : DirectionalSceneNode("helicopter", "", "") {
-
-		projectileManager = manager;
-
-		body = new SceneNode("helicopter_body", "CubeMesh", "ObjectMaterial");
-		cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "ObjectMaterial");
-		rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "ObjectMaterial");
-		rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
-		tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
-		tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
+	Helicopter::Helicopter(ProjectileManager *manager, bool isPlayer) : DirectionalSceneNode("helicopter", "", "", "") {
+		if (isPlayer == true) {
+			this->setName("Player");
+			body = new SceneNode("helicopter_body", "CubeMesh", "PlayerMaterial", "");
+			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "PlayerMaterial", "");
+			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "PlayerMaterial", "");
+			rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "");
+			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "");
+			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "PlayerMaterial", "");
+		}
+		else {
+			body = new SceneNode("helicopter_body", "CubeMesh", "EnemyMaterial", "");
+			cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "EnemyMaterial", "");
+			rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "EnemyMaterial", "");
+			rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "");
+			tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "");
+			tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "EnemyMaterial", "");
+		}
 
 		// Set up body
 		body->SetScale(glm::vec3(0.42, 0.15, 0.15));

@@ -8,7 +8,8 @@ namespace game {
 	DirectionalSceneNode::DirectionalSceneNode(const std::string name) : SceneNode(name) {
 
 	}
-	DirectionalSceneNode::DirectionalSceneNode(const std::string name, std::string object_name, std::string material_name) : SceneNode(name, object_name, material_name) {
+
+	DirectionalSceneNode::DirectionalSceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name) : SceneNode(name, object_name, material_name, texture_name) {
 
 	}
 

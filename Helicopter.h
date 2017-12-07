@@ -12,7 +12,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Helicopter(ProjectileManager *manager);
+		Helicopter(ProjectileManager *manager, bool isPlayer);
 
 		// Destructor
 		~Helicopter();
@@ -40,7 +40,7 @@ namespace game {
 		SceneNode *body, *cockpit, *rotorbladeJoint, *rotorBlade, *tail, *tailBlade;
 
 		Laser laser;
-
+    
 		glm::vec3 velocity;
 		glm::vec3 accelerationDirection;
 		float accelerationSpeed;

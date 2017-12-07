@@ -14,16 +14,16 @@ namespace game {
 		// Destructor
 		~Tank();
 
-		void Update(void) override;
+		void Update(SceneNode* player);
 
-		/*void moveLeft();
+		void moveLeft();
 		void moveRight();
 		void moveForward();
-		void moveBackward();*/
+		void moveBackward();
 		void turnLeft();
 		void turnRight();
-
-		float getBoundingSphereRadius(void) const override;
+    
+    float getBoundingSphereRadius(void) const override;
 
 	private:
 		SceneNode *tank_body, *gun_turret, *gun_barrel, *tread1, *tread2;

@@ -109,7 +109,19 @@ void SceneGraph::update(void){
     while (stck.size() > 0){
         SceneNode *current = stck.top();
         stck.pop();
-        current->Update();
+
+		Turret *turret = dynamic_cast<Turret*> (current);
+		Tank *tank = dynamic_cast<Tank*> (current);
+		if (turret != NULL) {
+			turret->Update(this->GetNode("Player"));
+		}
+		else if (tank != NULL) {
+			tank->Update(this->GetNode("Player"));
+		}
+		else {
+			current->Update();
+		}       
+
         for (std::vector<SceneNode *>::const_iterator it = current->children_begin();
              it != current->children_end(); it++){
             stck.push(*it);
