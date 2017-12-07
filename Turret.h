@@ -14,7 +14,7 @@ namespace game {
 		// Destructor
 		~Turret();
 
-		void Update(void) override;
+		void Update(SceneNode* player);
 
 		void turnLeft();
 		void turnRight();

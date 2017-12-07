@@ -78,7 +78,7 @@ namespace game {
 		turnDirection += -1;
 	}
 
-	void Tank::Update(void) {
+	void Tank::Update(SceneNode* player) {
 
 	}
 

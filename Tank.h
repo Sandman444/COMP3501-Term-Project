@@ -14,7 +14,7 @@ namespace game {
 		// Destructor
 		~Tank();
 
-		void Update(void) override;
+		void Update(SceneNode* player);
 
 		/*void moveLeft();
 		void moveRight();

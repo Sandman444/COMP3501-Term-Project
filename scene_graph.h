@@ -11,6 +11,9 @@
 #include "scene_node.h"
 #include "resource.h"
 #include "camera.h"
+#include "Helicopter.h"
+#include "Turret.h"
+#include "Tank.h"
 
 namespace game {
 
