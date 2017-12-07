@@ -8,12 +8,12 @@
 
 namespace game {
 
-	Tank::Tank(ResourceManager* resman) : DirectionalSceneNode("tank", "", "", resman) {
-		tank_body = new SceneNode("tank_body", "CubeMesh", "ObjectMaterial", resman);
-		gun_turret = new SceneNode("tank_turret", "CubeMesh", "ObjectMaterial", resman);
-		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "ObjectMaterial", resman);
-		tread1 = new SceneNode("tank_tread1", "CubeMesh", "ObjectMaterial", resman);
-		tread2 = new SceneNode("tank_tread2", "CubeMesh", "ObjectMaterial", resman);
+	Tank::Tank() : DirectionalSceneNode("tank", "", "") {
+		tank_body = new SceneNode("tank_body", "CubeMesh", "ObjectMaterial");
+		gun_turret = new SceneNode("tank_turret", "CubeMesh", "ObjectMaterial");
+		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "ObjectMaterial");
+		tread1 = new SceneNode("tank_tread1", "CubeMesh", "ObjectMaterial");
+		tread2 = new SceneNode("tank_tread2", "CubeMesh", "ObjectMaterial");
 
 		// Set up body
 		tank_body->SetScale(glm::vec3(0.2, 0.04, 0.2));
@@ -80,6 +80,10 @@ namespace game {
 
 	void Tank::Update(void) {
 
+	}
+
+	float Tank::getBoundingSphereRadius(void) const {
+		return tank_body->GetScale().x > tank_body->GetScale().y ? std::max(tank_body->GetScale().x, tank_body->GetScale().z) : std::max(tank_body->GetScale().y, tank_body->GetScale().z);
 	}
 
 

@@ -58,6 +58,9 @@ namespace game {
 		if (keyPressed[GLFW_KEY_F]) {
 			controlledHelicopter->fireMissile();
 		}
+		if (keyPressed[GLFW_KEY_B]) {
+			controlledHelicopter->dropBomb();
+		}
 	}
 
 	void InputController::control(Helicopter *helicopter) {

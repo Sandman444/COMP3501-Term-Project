@@ -5,6 +5,8 @@
 
 #include "Updateable.h"
 #include "Projectile.h"
+#include "Missile.h"
+#include "Bomb.h"
 
 namespace game {
 
@@ -22,7 +24,8 @@ namespace game {
 		void update();
 		void setScene(SceneGraph *sceneGraph);
 		bool sphereCollision(SceneNode *projectile, SceneNode *collideable);
-		void spawnProjectile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation);
+		void spawnMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation);
+		void spawnBomb(glm::vec3 position);
 		void addCollideable(SceneNode *collideable);
 
 	private:

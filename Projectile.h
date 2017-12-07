@@ -9,6 +9,7 @@ namespace game {
 
 	public:
 		// Constructor
+		Projectile();
 		Projectile(glm::vec3 position, glm::vec3 forward);
 
 		// Destructor
@@ -16,6 +17,7 @@ namespace game {
 
 		void setActive(bool activeState);
 		void setForward(glm::vec3 newForward);
+		void setSpeed(float speed);
 
 		virtual void move();
 		glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf) override;
@@ -24,10 +26,12 @@ namespace game {
 		float getBoundingSphereRadius(void) const override;
 		bool isOutOfRange();
 
+		SceneNode *projectileModel;
+
 
 	protected:
 
-		virtual void buildModel();
+		float speed = 0.2f;
 
 	private:
 
@@ -35,10 +39,7 @@ namespace game {
 
 		static int projectileId;
 
-		SceneNode *projectileModel;
-
 		glm::vec3 startingPosition;
-		float speed = 0.2f;
 		float activeRange = 45.0;
 		bool active = true;
 	};

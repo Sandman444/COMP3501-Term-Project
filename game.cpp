@@ -120,6 +120,7 @@ void Game::InitEventHandlers(void){
 void Game::SetupResources(void){
 	ResourceManager::theResourceManager().CreateCylinder("CylinderMesh");
 	ResourceManager::theResourceManager().CreateCube("CubeMesh");
+	ResourceManager::theResourceManager().CreateSphere("SphereMesh");
 
     // Load material
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
@@ -133,21 +134,26 @@ void Game::SetupScene(void){
     scene_.SetBackgroundColor(viewport_background_color_g);
 
 	helicopter = new Helicopter(&helicopterProjectileManager);
+	helicopter->SetPosition(glm::vec3(0.0, 3.0, 0.0));
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
-  turret = new Turret(&resman_);
-	turret->SetPosition(glm::vec3(0.0, 0.0, 0.0));
+	turret = new Turret();
+	turret->SetPosition(glm::vec3(0.0, 3.0, 0.5));
 	scene_.addNode(turret);
-	/*tank = new Tank(&resman_);
-	tank->SetPosition(glm::vec3(0.0, 0.0, 0.0));
-	scene_.addNode(tank);*/
+	tank = new Tank();
+	tank->SetPosition(glm::vec3(0.0, 3.0, 0.9));
+	scene_.addNode(tank);
+
 	Helicopter *otherCopter = new Helicopter(&helicopterProjectileManager);
 	scene_.addNode(otherCopter);
 	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
+
 	helicopterProjectileManager.addCollideable(otherCopter);
+	helicopterProjectileManager.addCollideable(turret);
+	helicopterProjectileManager.addCollideable(tank);
 }
 
 

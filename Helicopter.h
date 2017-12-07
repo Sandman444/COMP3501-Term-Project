@@ -27,6 +27,7 @@ namespace game {
 		void turnLeft();
 		void turnRight();
 		void fireMissile();
+		void dropBomb();
 
 		float getBoundingSphereRadius(void) const override;
 
@@ -52,8 +53,11 @@ namespace game {
 		float airFriction;
 		float levelingForce;
 
-		double lastFire = 0;
-		double fireInterval = 0.5;
+		double lastMissileFire = 0;
+		double missileFireInterval = 0.5;
+
+		double lastBombDrop = 0;
+		double bombDropInterval = 0.5;
 	};
 
 } // namespace game

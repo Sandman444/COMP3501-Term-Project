@@ -3,7 +3,6 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <stdexcept>
 #include <iostream>
-#include <algorithm>
 
 #include "Helicopter.h"
 
@@ -112,9 +111,17 @@ namespace game {
 
 	void Helicopter::fireMissile() {
 		double currentTime = glfwGetTime();
-		if (currentTime - lastFire > fireInterval) {
-			lastFire = currentTime;
-			projectileManager->spawnProjectile(GetPosition(), getForward(), GetOrientation());
+		if (currentTime - lastMissileFire > missileFireInterval) {
+			lastMissileFire = currentTime;
+			projectileManager->spawnMissile(GetPosition(), getForward(), GetOrientation());
+		}
+	}
+
+	void Helicopter::dropBomb() {
+		double currentTime = glfwGetTime();
+		if (currentTime - lastBombDrop > bombDropInterval) {
+			lastBombDrop = currentTime;
+			projectileManager->spawnBomb(GetPosition());
 		}
 	}
 

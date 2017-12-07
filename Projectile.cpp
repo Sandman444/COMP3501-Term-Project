@@ -1,6 +1,5 @@
 #include <stdexcept>
 #include <iostream>
-#include <algorithm>
 
 #include "Projectile.h"
 
@@ -8,25 +7,25 @@ namespace game {
 
 	int Projectile::projectileId = 0;
 
+	Projectile::Projectile() : DirectionalSceneNode(computeProjectileId(), "", "") {
+
+		forward_ = glm::vec3(0, 0, 0);
+		SetPosition(glm::vec3(0, 0, 0));
+	}
+
 	Projectile::Projectile(glm::vec3 position, glm::vec3 forward) : DirectionalSceneNode(computeProjectileId(), "", "") {
 		
 		forward_ = forward;
 		SetPosition(position);
-		buildModel();
 	}
 
 
 	Projectile::~Projectile() {
+		delete projectileModel;
 	}
 
 	std::string Projectile::computeProjectileId() {
 		return "Projectile" + std::to_string(projectileId++);
-	}
-
-	void Projectile::buildModel() {
-		projectileModel = new SceneNode(GetName() + "Model", "CubeMesh", "ObjectMaterial");
-		projectileModel->SetScale(glm::vec3(0.3, 0.1, 0.1));
-		this->addChild(projectileModel);
 	}
 
 	void Projectile::setActive(bool activeState) {
@@ -35,6 +34,10 @@ namespace game {
 
 	void Projectile::setForward(glm::vec3 newForward) {
 		forward_ = newForward;
+	}
+
+	void Projectile::setSpeed(float newSpeed) {
+		speed = newSpeed;
 	}
 
 	void Projectile::SetPosition(glm::vec3 position) {
@@ -56,7 +59,7 @@ namespace game {
 	}
 
 	float Projectile::getBoundingSphereRadius(void) const {
-		return projectileModel->GetScale().x > projectileModel->GetScale().y ? std::max(projectileModel->GetScale().x, projectileModel->GetScale().z) : std::max(projectileModel->GetScale().y, projectileModel->GetScale().z);
+		return projectileModel->GetScale().x < projectileModel->GetScale().y ? std::min(projectileModel->GetScale().x, projectileModel->GetScale().z) : std::min(projectileModel->GetScale().y, projectileModel->GetScale().z);
 	}
 
 	bool Projectile::isOutOfRange() {

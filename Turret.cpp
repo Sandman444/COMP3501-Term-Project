@@ -7,10 +7,10 @@
 #include "Turret.h"
 
 namespace game {
-	Turret::Turret(ResourceManager* resman) : DirectionalSceneNode("turret", "", "", resman) {
-		body = new SceneNode("turret_body", "CubeMesh", "ObjectMaterial", resman);
-		gun_housing = new SceneNode("turret_gun_housing", "CylinderMesh", "ObjectMaterial", resman);
-		barrel = new SceneNode("turret_barrel", "CylinderMesh", "ObjectMaterial", resman);
+	Turret::Turret() : DirectionalSceneNode("turret", "", "") {
+		body = new SceneNode("turret_body", "CubeMesh", "ObjectMaterial");
+		gun_housing = new SceneNode("turret_gun_housing", "CylinderMesh", "ObjectMaterial");
+		barrel = new SceneNode("turret_barrel", "CylinderMesh", "ObjectMaterial");
 
 		// Set up body
 		body->SetScale(glm::vec3(0.2, 0.04, 0.2));
@@ -45,5 +45,9 @@ namespace game {
 
 	void Turret::Update(void) {
 
+	}
+
+	float Turret::getBoundingSphereRadius(void) const {
+		return body->GetScale().x > body->GetScale().y ? std::max(body->GetScale().x, body->GetScale().z) : std::max(body->GetScale().y, body->GetScale().z);
 	}
 }

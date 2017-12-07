@@ -39,7 +39,7 @@ namespace game {
 			void addNode(SceneNode* newNode);
 
             // Find a scene node with a specific name
-            SceneNode *GetNode(std::string node_name) const;
+            SceneNode *GetNode(std::string node_name) const; 
 
             // Draw the entire scene
             void Draw(Camera *camera);

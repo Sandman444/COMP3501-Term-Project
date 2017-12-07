@@ -27,7 +27,6 @@ namespace game {
 			for (std::vector<SceneNode*>::iterator collideable = collideables.begin(); collideable != collideables.end(); ++collideable) {
 				if (sphereCollision(*projectile, *collideable)) {
 					collisionDetected = true;
-					//(*collideable)->setActive(false);
 					break;
 				}
 			}
@@ -42,7 +41,7 @@ namespace game {
 			}
 			else {
 				(*projectile)->setActive(false);
-				idleProjectiles.push_back(*projectile);
+				(*projectile)->getParent()->removeChild((*projectile)->GetName());
 				projectile = projectiles.erase(projectile); // Remove from projectiles list
 			}
 		}
@@ -52,25 +51,25 @@ namespace game {
 		return glm::distance(projectile->GetPosition(), collideable->GetPosition()) < (projectile->getBoundingSphereRadius() + collideable->getBoundingSphereRadius());
 	}
 
-	void ProjectileManager::spawnProjectile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation) {
-		Projectile *newProjectile;
-		if (idleProjectiles.size() == 0) {
-			newProjectile = new Projectile(position, initialForward);
-			scene->addNode(newProjectile);
-		}
-		else {
-			newProjectile = idleProjectiles[idleProjectiles.size() - 1];
-			idleProjectiles.pop_back();
-			newProjectile->SetPosition(position);
-			newProjectile->setForward(initialForward);
-			newProjectile->setActive(true);
-		}
-		newProjectile->SetOrientation(orientation);
-		projectiles.push_back(newProjectile);
+	void ProjectileManager::spawnMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation) {
+		Missile *newMissile;
+		newMissile = new Missile(position, initialForward);
+		scene->addNode(newMissile);
+		newMissile->SetOrientation(orientation);
+		projectiles.push_back(newMissile);
 	}
+
+	void ProjectileManager::spawnBomb(glm::vec3 position) {
+		Bomb *newBomb;
+		newBomb = new Bomb(position);
+		scene->addNode(newBomb);
+		projectiles.push_back(newBomb);
+	}
+
 
 	void ProjectileManager::addCollideable(SceneNode *collideable) {
 		collideables.push_back(collideable);
 	}
+
 
 } // namespace game
