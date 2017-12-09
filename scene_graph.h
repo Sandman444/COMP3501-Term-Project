@@ -7,6 +7,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Updateable.h"
 #include "scene_node.h"
 #include "resource.h"
 #include "camera.h"
@@ -14,18 +15,16 @@
 namespace game {
 
     // Class that manages all the objects in a scene
-    class SceneGraph {
+    class SceneGraph : public Updateable {
 
         private:
             // Background color
             glm::vec3 background_color_;
 
-            // Scene nodes to render
-            std::vector<SceneNode *> node_;
+            // Root of the hierarchy
+            SceneNode * root_;
 
         public:
-            typedef std::vector<SceneNode *>::const_iterator const_iterator;
-
             SceneGraph(void);
             ~SceneGraph();
 
@@ -33,21 +32,20 @@ namespace game {
             void SetBackgroundColor(glm::vec3 color);
             glm::vec3 GetBackgroundColor(void) const;
             
-            // Create a scene node from two resources
-            SceneNode *CreateNode(std::string node_name, Resource *geometry, Resource *material);
-            // Add an already-created node
-            void AddNode(SceneNode *node);
+			// Set the root
+			void setRoot(SceneNode* root);
+
+            // Add node to root
+			void addNode(SceneNode* newNode);
+
             // Find a scene node with a specific name
-            SceneNode *GetNode(std::string node_name) const;
-            // Get node const iterator
-            std::vector<SceneNode *>::const_iterator begin() const;
-            std::vector<SceneNode *>::const_iterator end() const;
+            SceneNode *GetNode(std::string node_name) const; 
 
             // Draw the entire scene
             void Draw(Camera *camera);
 
             // Update entire scene
-            void Update(void);
+            void update(void);
 
     }; // class SceneGraph
 

@@ -9,49 +9,42 @@
 
 namespace game {
 
-Camera::Camera(void){
+Camera::Camera(void) : SceneNode("camera") {
 }
 
 
 Camera::~Camera(){
 }
 
+void Camera::follow(Helicopter* helicopter) {
+	followingHelicopter = helicopter;
+}
 
-glm::vec3 Camera::GetPosition(void) const {
+glm::mat4 Camera::Draw(Camera *camera, glm::mat4 parent_transf) {
 
-    return position_;
+	return glm::mat4(1.0);
 }
 
 
-glm::quat Camera::GetOrientation(void) const {
-
-    return orientation_;
+void Camera::Update(void) {
+	// update camera position
+	glm::vec3 flatenedForward = glm::vec3(followingHelicopter->getForward().x, 0, followingHelicopter->getForward().z);
+	if (viewMode == 1) {
+		SetView(followingHelicopter->GetPosition() - flatenedForward * 2.0f + glm::vec3(0, 1, 0) * 0.5f, flatenedForward, glm::vec3(0, 1, 0));
+	}
+	else if (viewMode == 0) {
+		SetView(followingHelicopter->GetPosition() + followingHelicopter->getForward() * 0.3f, flatenedForward, glm::vec3(0, 1, 0));
+	}
 }
 
-
-void Camera::SetPosition(glm::vec3 position){
-
-    position_ = position;
+void Camera::setViewMode(std::string mode) {
+	if (mode == "third person") {
+		viewMode = 1;
+	}
+	else {
+		viewMode = 0;
+	}
 }
-
-
-void Camera::SetOrientation(glm::quat orientation){
-
-    orientation_ = orientation;
-}
-
-
-void Camera::Translate(glm::vec3 trans){
-
-    position_ += trans;
-}
-
-
-void Camera::Rotate(glm::quat rot){
-
-    orientation_ = rot * orientation_;
-}
-
 
 glm::vec3 Camera::GetForward(void) const {
 
@@ -102,7 +95,7 @@ void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
 
     // Store initial forward and side vectors
     // See slide in "Camera control" for details
-    forward_ = look_at - position;
+    forward_ = look_at;
     forward_ = -glm::normalize(forward_);
     side_ = glm::cross(up, forward_);
     side_ = glm::normalize(side_);

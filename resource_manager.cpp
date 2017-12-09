@@ -4,17 +4,11 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <SOIL/SOIL.h>
 
 #include "resource_manager.h"
 
 namespace game {
-
-ResourceManager::ResourceManager(void){
-}
-
-
-ResourceManager::~ResourceManager(){
-}
 
 
 void ResourceManager::AddResource(ResourceType type, const std::string name, GLuint resource, GLsizei size){
@@ -23,7 +17,7 @@ void ResourceManager::AddResource(ResourceType type, const std::string name, GLu
 
     res = new Resource(type, name, resource, size);
 
-    resource_.push_back(res);
+	resource_[name] = res;
 }
 
 
@@ -33,9 +27,18 @@ void ResourceManager::AddResource(ResourceType type, const std::string name, GLu
 
     res = new Resource(type, name, array_buffer, element_array_buffer, size);
 
-    resource_.push_back(res);
+	resource_[name] = res;
 }
 
+//Add a data resource
+void ResourceManager::AddResource(ResourceType type, const std::string name, GLfloat *data, GLsizei size) {
+
+	Resource *res;
+
+	res = new Resource(type, name, data, size);
+
+	resource_[name] = res;
+}
 
 void ResourceManager::LoadResource(ResourceType type, const std::string name, const char *filename){
 
@@ -51,12 +54,12 @@ void ResourceManager::LoadResource(ResourceType type, const std::string name, co
 Resource *ResourceManager::GetResource(const std::string name) const {
 
     // Find resource with the specified name
-    for (int i = 0; i < resource_.size(); i++){
-        if (resource_[i]->GetName() == name){
-            return resource_[i];
-        }
-    }
-    return NULL;
+	try {
+		return resource_.at(name);
+	}
+	catch (const std::out_of_range& oor) {
+		return NULL;
+	}
 }
 
 
@@ -99,11 +102,43 @@ void ResourceManager::LoadMaterial(const std::string name, const char *prefix){
         throw(std::ios_base::failure(std::string("Error compiling fragment shader: ")+std::string(buffer)));
     }
 
+	// Try to also load a geometry shader
+	filename = std::string(prefix) + std::string(GEOMETRY_PROGRAM_EXTENSION);
+	bool geometry_program = false;
+	std::string gp = "";
+	GLuint gs;
+	try {
+		gp = LoadTextFile(filename.c_str());
+		geometry_program = true;
+	}
+	catch (std::exception &e) {
+	}
+
+	if (geometry_program) {
+		// Create a shader from the geometry program source code
+		gs = glCreateShader(GL_GEOMETRY_SHADER);
+		const char *source_gp = gp.c_str();
+		glShaderSource(gs, 1, &source_gp, NULL);
+		glCompileShader(gs);
+
+		// Check if shader compiled successfully
+		GLint status;
+		glGetShaderiv(gs, GL_COMPILE_STATUS, &status);
+		if (status != GL_TRUE) {
+			char buffer[512];
+			glGetShaderInfoLog(gs, 512, NULL, buffer);
+			throw(std::ios_base::failure(std::string("Error compiling geometry shader: ") + std::string(buffer)));
+		}
+	}
+
     // Create a shader program linking both vertex and fragment shaders
     // together
     GLuint sp = glCreateProgram();
     glAttachShader(sp, vs);
     glAttachShader(sp, fs);
+	if (geometry_program) {
+		glAttachShader(sp, gs);
+	}
     glLinkProgram(sp);
 
     // Check if shaders were linked successfully
@@ -154,7 +189,7 @@ void ResourceManager::CreateTorus(std::string object_name, float loop_radius, fl
 
     // Number of vertices and faces to be created
     // Check the construction algorithm below to understand the numbers
-    // specified beloww
+    // specified below
     const GLuint vertex_num = num_loop_samples*num_circle_samples;
     const GLuint face_num = num_loop_samples*num_circle_samples*2;
 
@@ -251,6 +286,7 @@ void ResourceManager::CreateTorus(std::string object_name, float loop_radius, fl
     // Create resource
     AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
 }
+
 
 void ResourceManager::CreateSphere(std::string object_name, float radius, int num_samples_theta, int num_samples_phi){
 
@@ -353,108 +389,105 @@ void ResourceManager::CreateSphere(std::string object_name, float radius, int nu
     AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
 }
 
-void ResourceManager::CreateCube(std::string object_name) {
 
-	// This construction uses shared vertices, following the same data
-	// format as the other functions 
-	// However, vertices are repeated since their normals at each face
-	// are different
-	// Each face of the cube is defined by four vertices (with the same normal) and two triangles
+// Create the geometry for a cube centered at (0, 0, 0) with sides of length 1
+void ResourceManager::CreateCube(std::string object_name){
 
-	// Vertices used to build the cube
-	// 11 attributes per vertex: 3D position (3), 3D normal (3), RGB color (3), texture coordinates (2)
-	GLfloat vertex[] = {
-		// First cube face 
-		-0.5, -0.5,  0.5,    0.0,  0.0,  1.0,    1.0, 0.0, 0.0,    0.0, 0.0,
-		0.5, -0.5,  0.5,    0.0,  0.0,  1.0,    0.0, 1.0, 0.0,    1.0, 0.0,
-		0.5,  0.5,  0.5,    0.0,  0.0,  1.0,    0.0, 0.0, 1.0,    1.0, 1.0,
-		-0.5,  0.5,  0.5,    0.0,  0.0,  1.0,    1.0, 0.0, 1.0,    0.0, 1.0,
-		// Second cube face
-		0.5, -0.5, -0.5,    1.0,  0.0,  0.0,    1.0, 0.0, 0.0,    0.0, 0.0,
-		0.5,  0.5, -0.5,    1.0,  0.0,  0.0,    0.0, 1.0, 0.0,    1.0, 0.0,
-		0.5,  0.5,  0.5,    1.0,  0.0,  0.0,    0.0, 0.0, 1.0,    1.0, 1.0,
-		0.5, -0.5,  0.5,    1.0,  0.0,  0.0,    1.0, 0.0, 1.0,    0.0, 1.0,
-		// Third cube face
-		0.5, -0.5, -0.5,    0.0,  0.0, -1.0,    1.0, 0.0, 0.0,    0.0, 0.0,
-		-0.5, -0.5, -0.5,    0.0,  0.0, -1.0,    0.0, 1.0, 0.0,    1.0, 0.0,
-		-0.5,  0.5, -0.5,    0.0,  0.0, -1.0,    0.0, 0.0, 1.0,    1.0, 1.0,
-		0.5,  0.5, -0.5,    0.0,  0.0, -1.0,    1.0, 0.0, 1.0,    0.0, 1.0,
-		// Fourth cube face
-		-0.5,  0.5, -0.5,   -1.0,  0.0,  0.0,    1.0, 0.0, 0.0,    0.0, 0.0,
-		-0.5, -0.5, -0.5,   -1.0,  0.0,  0.0,    0.0, 1.0, 0.0,    1.0, 0.0,
-		-0.5, -0.5,  0.5,   -1.0,  0.0,  0.0,    0.0, 0.0, 1.0,    1.0, 1.0,
-		-0.5,  0.5,  0.5,   -1.0,  0.0,  0.0,    1.0, 0.0, 1.0,    0.0, 1.0,
-		// Fifth cube face
-		-0.5,  0.5, -0.5,    0.0,  1.0,  0.0,    1.0, 0.0, 0.0,    0.0, 0.0,
-		-0.5,  0.5,  0.5,    0.0,  1.0,  0.0,    0.0, 1.0, 0.0,    0.0, 1.0,
-		0.5,  0.5,  0.5,    0.0,  1.0,  0.0,    0.0, 0.0, 1.0,    1.0, 1.0,
-		0.5,  0.5, -0.5,    0.0,  1.0,  0.0,    1.0, 0.0, 1.0,    1.0, 0.0,
-		// Sixth cube face
-		0.5, -0.5, -0.5,    0.0, -1.0,  0.0,    1.0, 0.0, 0.0,    0.0, 0.0,
-		-0.5, -0.5, -0.5,    0.0, -1.0,  0.0,    0.0, 1.0, 0.0,    1.0, 0.0,
-		-0.5, -0.5,  0.5,    0.0, -1.0,  0.0,    0.0, 0.0, 1.0,    1.0, 1.0,
-		0.5, -0.5,  0.5,    0.0, -1.0,  0.0,    1.0, 0.0, 1.0,    0.0, 1.0,
-	};
+    // This construction uses shared vertices, following the same data
+    // format as the other functions 
+    // However, vertices are repeated since their normals at each face
+    // are different
+    // Each face of the cube is defined by four vertices (with the same normal) and two triangles
 
-	// Triangles
-	GLuint face[] = {
-		// First cube face, with two triangles
-		0, 1, 2,
-		0, 2, 3,
-		// Second face
-		4, 5, 6,
-		4, 6, 7,
-		// Third face
-		8, 9, 10,
-		8, 10, 11,
-		// Fourth face
-		12, 13, 14,
-		12, 14, 15,
-		// Fifth face
-		16, 17, 18,
-		16, 18, 19,
-		// Sixth face
-		20, 21, 22,
-		20, 22, 23,
-	};
+    // Vertices used to build the cube
+    // 11 attributes per vertex: 3D position (3), 3D normal (3), RGB color (3), texture coordinates (2)
+    GLfloat vertex[] = {
+        // First cube face 
+        -0.5, -0.5,  0.5,    0.0,  0.0,  1.0,    1.0, 0.0, 0.0,    0.0, 0.0,
+         0.5, -0.5,  0.5,    0.0,  0.0,  1.0,    0.0, 1.0, 0.0,    1.0, 0.0,
+         0.5,  0.5,  0.5,    0.0,  0.0,  1.0,    0.0, 0.0, 1.0,    1.0, 1.0,
+        -0.5,  0.5,  0.5,    0.0,  0.0,  1.0,    1.0, 0.0, 1.0,    0.0, 1.0,
+        // Second cube face
+         0.5, -0.5, -0.5,    1.0,  0.0,  0.0,    1.0, 0.0, 0.0,    0.0, 0.0,
+         0.5,  0.5, -0.5,    1.0,  0.0,  0.0,    0.0, 1.0, 0.0,    1.0, 0.0,
+         0.5,  0.5,  0.5,    1.0,  0.0,  0.0,    0.0, 0.0, 1.0,    1.0, 1.0,
+         0.5, -0.5,  0.5,    1.0,  0.0,  0.0,    1.0, 0.0, 1.0,    0.0, 1.0,
+        // Third cube face
+         0.5, -0.5, -0.5,    0.0,  0.0, -1.0,    1.0, 0.0, 0.0,    0.0, 0.0,
+        -0.5, -0.5, -0.5,    0.0,  0.0, -1.0,    0.0, 1.0, 0.0,    1.0, 0.0,
+        -0.5,  0.5, -0.5,    0.0,  0.0, -1.0,    0.0, 0.0, 1.0,    1.0, 1.0,
+         0.5,  0.5, -0.5,    0.0,  0.0, -1.0,    1.0, 0.0, 1.0,    0.0, 1.0,
+        // Fourth cube face
+        -0.5,  0.5, -0.5,   -1.0,  0.0,  0.0,    1.0, 0.0, 0.0,    0.0, 0.0,
+        -0.5, -0.5, -0.5,   -1.0,  0.0,  0.0,    0.0, 1.0, 0.0,    1.0, 0.0,
+        -0.5, -0.5,  0.5,   -1.0,  0.0,  0.0,    0.0, 0.0, 1.0,    1.0, 1.0,
+        -0.5,  0.5,  0.5,   -1.0,  0.0,  0.0,    1.0, 0.0, 1.0,    0.0, 1.0,
+        // Fifth cube face
+        -0.5,  0.5, -0.5,    0.0,  1.0,  0.0,    1.0, 0.0, 0.0,    0.0, 0.0,
+        -0.5,  0.5,  0.5,    0.0,  1.0,  0.0,    0.0, 1.0, 0.0,    0.0, 1.0,
+         0.5,  0.5,  0.5,    0.0,  1.0,  0.0,    0.0, 0.0, 1.0,    1.0, 1.0,
+         0.5,  0.5, -0.5,    0.0,  1.0,  0.0,    1.0, 0.0, 1.0,    1.0, 0.0,
+        // Sixth cube face
+         0.5, -0.5, -0.5,    0.0, -1.0,  0.0,    1.0, 0.0, 0.0,    0.0, 0.0,
+        -0.5, -0.5, -0.5,    0.0, -1.0,  0.0,    0.0, 1.0, 0.0,    1.0, 0.0,
+        -0.5, -0.5,  0.5,    0.0, -1.0,  0.0,    0.0, 0.0, 1.0,    1.0, 1.0,
+         0.5, -0.5,  0.5,    0.0, -1.0,  0.0,    1.0, 0.0, 1.0,    0.0, 1.0,
+    };
 
-	// Create OpenGL buffers and copy data
-	GLuint vbo, ebo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
+    // Triangles
+    GLuint face[] = {
+        // First cube face, with two triangles
+        0, 1, 2,
+        0, 2, 3,
+        // Second face
+        4, 5, 6,
+        4, 6, 7,
+        // Third face
+        8, 9, 10,
+        8, 10, 11,
+        // Fourth face
+        12, 13, 14,
+        12, 14, 15,
+        // Fifth face
+        16, 17, 18,
+        16, 18, 19,
+        // Sixth face
+        20, 21, 22,
+        20, 22, 23,
+    };
 
-	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(face), face, GL_STATIC_DRAW);
+    // Create OpenGL buffers and copy data
+    GLuint vbo, ebo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
 
-	// Create resource
-	AddResource(Mesh, object_name, vbo, ebo, sizeof(face) / sizeof(GLfloat));
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(face), face, GL_STATIC_DRAW);
+
+    // Create resource
+    AddResource(Mesh, object_name, vbo, ebo, sizeof(face) / sizeof(GLfloat));
 }
 
-void ResourceManager::CreateCylinder(std::string object_name, float loop_radius, float circle_radius, int num_loop_samples, int num_circle_samples) {
-
-	// Create a torus
-	// The torus is built from a large loop with small circles around the loop
+// Create the geometry for a cylinder
+void ResourceManager::CreateCylinder(std::string object_name, float cylinder_radius, float cylinder_height, int num_cylinder_samples) {
 
 	// Number of vertices and faces to be created
-	// Check the construction algorithm below to understand the numbers
-	// specified below
-	const GLuint vertex_num = num_loop_samples*num_circle_samples + 2*num_circle_samples + 1;
-	const GLuint face_num = 2*num_loop_samples*num_circle_samples + 2*num_circle_samples;
+	const GLuint vertex_num = num_cylinder_samples * 2;
+	const GLuint face_num = num_cylinder_samples * 2 + (num_cylinder_samples - 2) * 2; // add for caps
 
-	// Number of attributes for vertices and faces
-	const int vertex_att = 11;
-	const int face_att = 3;
+																					   // Number of attributes for vertices and faces
+	const int vertex_att = 11;  // 11 attributes per vertex: 3D position (3), 3D normal (3), RGB color (3), 2D texture coordinates (2)
+	const int face_att = 3; // Vertex indices (3)
 
-	// Data buffers for the torus
 	GLfloat *vertex = NULL;
 	GLuint *face = NULL;
 
 	// Allocate memory for buffers
 	try {
-		vertex = new GLfloat[vertex_num * vertex_att]; // 11 attributes per vertex: 3D position (3), 3D normal (3), RGB color (3), 2D texture coordinates (2)
-		face = new GLuint[face_num * face_att]; // 3 indices per face
+		vertex = new GLfloat[vertex_num * vertex_att];
+		face = new GLuint[face_num * face_att];
 	}
 	catch (std::exception &e) {
 		throw e;
@@ -462,107 +495,83 @@ void ResourceManager::CreateCylinder(std::string object_name, float loop_radius,
 
 	// Create vertices 
 	float theta; // Angles for circles
-	glm::vec3 loop_center;
 	glm::vec3 vertex_position;
 	glm::vec3 vertex_normal;
 	glm::vec3 vertex_color;
 	glm::vec2 vertex_coord;
-	//create and add vertice for sides
-	for (int i = 0; i < num_loop_samples; i++) { // centre line
-		loop_center = glm::vec3(0.0, 0.5 - ((float)i/num_loop_samples), 0.0); // centre of a small circle
 
-		for (int j = 0; j < num_circle_samples; j++) { // circle
+	for (int i = 0; i < num_cylinder_samples; i++) {
+		theta = 2.0*glm::pi<GLfloat>()*i / num_cylinder_samples;
 
-			theta = 2.0*glm::pi<GLfloat>()*j / num_circle_samples; // circle sample (angle phi)
-
-			// Define position, normal and color of vertex
-			vertex_normal = glm::vec3(cos(theta), 0, sin(theta));
-			vertex_position = loop_center + vertex_normal*circle_radius;
-			vertex_color = glm::vec3(1.0 - ((float)i / (float)num_loop_samples),
-				(float)i / (float)num_loop_samples,
-				(float)j / (float)num_circle_samples);
-			vertex_coord = glm::vec2(theta / 2.0*glm::pi<GLfloat>(),
-				theta / 2.0*glm::pi<GLfloat>());
-
-			// Add vectors to the data buffer
-			for (int k = 0; k < 3; k++) {
-				vertex[(i*num_circle_samples + j)*vertex_att + k] = vertex_position[k];
-				vertex[(i*num_circle_samples + j)*vertex_att + k + 3] = vertex_normal[k];
-				vertex[(i*num_circle_samples + j)*vertex_att + k + 6] = vertex_color[k];
-			}
-			vertex[(i*num_circle_samples + j)*vertex_att + 9] = vertex_coord[0];
-			vertex[(i*num_circle_samples + j)*vertex_att + 10] = vertex_coord[1];
-		}
-	}
-
-	//Create and add vertices for top endcap
-	//same normal, color, and coord for each
-	/*vertex_normal = glm::vec3(0.0, 1.0, 0.0);
-	vertex_color = glm::vec3(0.0, 0.0, 255.0);
-	vertex_coord = glm::vec2(0, 0);
-		//midpoint
-	vertex_position = glm::vec3(0.0, 0.5, 0.0);
-
-	for (int k = 0; k < 3; k++) {
-		vertex[num_circle_samples*num_loop_samples*vertex_att + k] = vertex_position[k];
-		vertex[num_circle_samples*num_loop_samples*vertex_att + k + 3] = vertex_normal[k];
-		vertex[num_circle_samples*num_loop_samples + k + 6] = vertex_color[k];
-	}
-	vertex[num_circle_samples*num_loop_samples*vertex_att + 9] = vertex_coord[0];
-	vertex[num_circle_samples*num_loop_samples*vertex_att + 10] = vertex_coord[1];
-	for (int i = 0; i < num_circle_samples; i++) { //endcap circle
-		theta = 2.0*glm::pi<GLfloat>()*i / num_circle_samples; //circle sample
-		// Define position
+		// Vertex on bottom of cylinder
 		vertex_normal = glm::vec3(cos(theta), 0, sin(theta));
-		vertex_position = loop_center + vertex_normal*circle_radius;
+		vertex_position = glm::vec3(0, -cylinder_height / 2, 0) + vertex_normal * cylinder_radius;
+		vertex_color = glm::vec3(1.0 - ((float)i / (float)num_cylinder_samples),
+			((float)i / (float)num_cylinder_samples),
+			((float)i / (float)num_cylinder_samples));
+		vertex_coord = glm::vec2(theta / 2.0 * glm::pi<GLfloat>(), 0);
 
+		// Add vectors to the data buffer
 		for (int k = 0; k < 3; k++) {
-		vertex[num_circle_samples*num_loop_samples*vertex_att + vertex_att*(i+1) + k] = vertex_position[k];
-		vertex[num_circle_samples*num_loop_samples*vertex_att + vertex_att*(i + 1) + k + 3] = vertex_normal[k];
-		vertex[num_circle_samples*num_loop_samples + vertex_att*(i + 1) + k + 6] = vertex_color[k];
+			vertex[(i * 2) * vertex_att + k] = vertex_position[k];
+			vertex[(i * 2) * vertex_att + k + 3] = vertex_normal[k];
+			vertex[(i * 2) * vertex_att + k + 6] = vertex_color[k];
+		}
+		vertex[(i * 2) * vertex_att + 9] = vertex_coord[0];
+		vertex[(i * 2) * vertex_att + 10] = vertex_coord[1];
+
+		// Vertex on top of cylinder
+		vertex_normal = glm::vec3(cos(theta), 0, sin(theta));
+		vertex_position = glm::vec3(0, cylinder_height / 2, 0) + vertex_normal * cylinder_radius;
+		vertex_color = glm::vec3(1.0 - ((float)i / (float)num_cylinder_samples),
+			((float)i / (float)num_cylinder_samples),
+			((float)i / (float)num_cylinder_samples));
+		vertex_coord = glm::vec2(theta / 2.0 * glm::pi<GLfloat>(), 1.0);
+
+		// Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) {
+			vertex[(i * 2 + 1) * vertex_att + k] = vertex_position[k];
+			vertex[(i * 2 + 1) * vertex_att + k + 3] = vertex_normal[k];
+			vertex[(i * 2 + 1) * vertex_att + k + 6] = vertex_color[k];
+		}
+		vertex[(i * 2 + 1) * vertex_att + 9] = vertex_coord[0];
+		vertex[(i * 2 + 1) * vertex_att + 10] = vertex_coord[1];
 	}
-	vertex[num_circle_samples*num_loop_samples*vertex_att + vertex_att*(i + 1) + 9] = vertex_coord[0];
-	vertex[num_circle_samples*num_loop_samples*vertex_att + vertex_att*(i + 1) + 10] = vertex_coord[1];
-	}*/
+
 	// Create triangles
-		//triangles for the sides
-	for (int i = 0; i < num_loop_samples; i++) {
-		for (int j = 0; j < num_circle_samples; j++) {
-			// Two triangles per quad
-			glm::vec3 t1(((i + 1) % num_loop_samples)*num_circle_samples + j,
-				i*num_circle_samples + ((j + 1) % num_circle_samples),
-				i*num_circle_samples + j);
-			glm::vec3 t2(((i + 1) % num_loop_samples)*num_circle_samples + j,
-				((i + 1) % num_loop_samples)*num_circle_samples + ((j + 1) % num_circle_samples),
-				i*num_circle_samples + ((j + 1) % num_circle_samples));
-			// Add two triangles to the data buffer
-			for (int k = 0; k < 3; k++) {
-				face[(i*num_circle_samples + j)*face_att * 2 + k] = (GLuint)t1[k];
-				face[(i*num_circle_samples + j)*face_att * 2 + k + face_att] = (GLuint)t2[k];
-			}
+	for (int i = 0; i < num_cylinder_samples; i++) {
+		// Two triangles per quad
+		glm::vec3 t1((i * 2) % (num_cylinder_samples * 2), (i * 2 + 1) % (num_cylinder_samples * 2), (i * 2 + 2) % (num_cylinder_samples * 2));
+		glm::vec3 t2((i * 2 + 1) % (num_cylinder_samples * 2), (i * 2 + 2) % (num_cylinder_samples * 2), (i * 2 + 3) % (num_cylinder_samples * 2));
+		// Add two triangles to the data buffer
+		for (int k = 0; k < 3; k++) {
+			face[i * face_att * 2 + k] = (GLuint)t1[k];
+			face[i * face_att * 2 + k + face_att] = (GLuint)t2[k];
 		}
 	}
-		//triangles for the end caps
-	/*for (int i = 0; i < num_circle_samples; i++) {
-		//number of triangles equals number of circle samples
-		glm::vec3 tri(num_loop_samples*num_circle_samples, num_loop_samples*num_circle_samples + vertex_att*(i+1), num_loop_samples*num_circle_samples + vertex_att*(i+2));
-		//add the triangle to data buffer
+
+	// Endcap triangles
+	for (int i = 0; i < num_cylinder_samples - 2; i++) {
+		// Triangle on top
+		glm::vec3 t1(0, i * 2 + 2, i * 2 + 4);
+		// Triangle on bottom
+		glm::vec3 t2(1, i * 2 + 3, i * 2 + 5);
 		for (int k = 0; k < 3; k++) {
-			face[2*num_circle_samples*num_loop_samples*face_att + k] = (GLuint)tri[k];
+			face[num_cylinder_samples * 2 * face_att + (i * face_att * 2) + k] = (GLuint)t1[k];
+			face[num_cylinder_samples * 2 * face_att + (i * face_att * 2) + face_att + k] = (GLuint)t2[k];
 		}
-	}*/
+	}
 
 
 	// Create OpenGL buffers and copy data
-	//GLuint vao;
-	//glGenVertexArrays(1, &vao);
-	//glBindVertexArray(vao);
-
 	GLuint vbo, ebo;
+
+	// Create buffer for vertices
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, vertex_num * vertex_att * sizeof(GLfloat), vertex, GL_STATIC_DRAW);
 
+	// Create buffer for faces
 	glGenBuffers(1, &ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, face_num * face_att * sizeof(GLuint), face, GL_STATIC_DRAW);
@@ -573,6 +582,222 @@ void ResourceManager::CreateCylinder(std::string object_name, float loop_radius,
 
 	// Create resource
 	AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
+}
+
+void ResourceManager::CreateSphereParticles(std::string object_name, int num_particles) {
+
+	// Create a set of points which will be the particles
+	// This is similar to drawing a sphere: we will sample points on a sphere, but will allow them to also deviate a bit from the sphere along the normal (change of radius)
+
+	// Data buffer
+	GLfloat *particle = NULL;
+
+	// Number of attributes per particle: position (3), normal (3), and color (3), texture coordinates (2)
+	const int particle_att = 11;
+
+	// Allocate memory for buffer
+	try {
+		particle = new GLfloat[num_particles * particle_att];
+	}
+	catch (std::exception &e) {
+		throw e;
+	}
+
+	float trad = 0.2; // Defines the starting point of the particles along the normal
+	float maxspray = 0.5; // This is how much we allow the points to deviate from the sphere
+	float u, v, w, theta, phi, spray; // Work variables
+
+	for (int i = 0; i < num_particles; i++) {
+
+		// Get three random numbers
+		u = ((double)rand() / (RAND_MAX));
+		v = ((double)rand() / (RAND_MAX));
+		w = ((double)rand() / (RAND_MAX));
+
+		// Use u to define the angle theta along one direction of the sphere
+		theta = u * 2.0*glm::pi<float>();
+		// Use v to define the angle phi along the other direction of the sphere
+		phi = acos(2.0*v - 1.0);
+		// Use w to define how much we can deviate from the surface of the sphere (change of radius)
+		spray = maxspray*pow((float)w, (float)(1.0 / 3.0)); // Cubic root of w
+
+															// Define the normal and point based on theta, phi and the spray
+		glm::vec3 normal(spray*cos(theta)*sin(phi), spray*sin(theta)*sin(phi), spray*cos(phi));
+		glm::vec3 position(normal.x*trad, normal.y*trad, normal.z*trad);
+		glm::vec3 color(i / (float)num_particles, 0.0, 1.0 - (i / (float)num_particles)); // We can use the color for debug, if needed
+
+																						  // Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) {
+			particle[i*particle_att + k] = position[k];
+			particle[i*particle_att + k + 3] = normal[k];
+			particle[i*particle_att + k + 6] = color[k];
+		}
+	}
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, num_particles * particle_att * sizeof(GLfloat), particle, GL_STATIC_DRAW);
+
+	// Free data buffers
+	delete[] particle;
+
+	// Create resource
+	AddResource(PointSet, object_name, vbo, 0, num_particles);
+}
+
+
+void ResourceManager::CreateTorusParticles(std::string object_name, int num_particles, float loop_radius, float circle_radius) {
+
+	// Create a set of points which will be the particles
+	// This is similar to drawing a torus
+
+	// Data buffer
+	GLfloat *particle = NULL;
+
+	// Number of attributes per particle: position (3), normal (3), and color (3), texture coordinates (2)
+	const int particle_att = 11;
+
+	// Allocate memory for buffer
+	try {
+		particle = new GLfloat[num_particles * particle_att];
+	}
+	catch (std::exception &e) {
+		throw e;
+	}
+
+	float maxspray = 0.5; // This is how much we allow the points to deviate from the sphere
+	float u, v, w, theta, phi, spray; // Work variables
+
+	for (int i = 0; i < num_particles; i++) {
+
+		// Get a random point on a torus
+
+		// Get two random numbers
+		u = ((double)rand() / (RAND_MAX));
+		v = ((double)rand() / (RAND_MAX));
+
+		// Use u to define the angle theta along the loop of the torus
+		theta = u * 2.0*glm::pi<float>();
+		// Use v to define the angle phi along the circle of the torus
+		phi = v * 2.0*glm::pi<float>();
+
+		// Define the normal and point based on theta and phi
+		glm::vec3 normal(cos(theta)*cos(phi), sin(theta)*cos(phi), sin(phi));
+		glm::vec3 center(loop_radius*cos(theta), loop_radius*sin(theta), 0.0);
+		glm::vec3 position = center + normal*circle_radius;
+		glm::vec3 color(i / (float)num_particles, 0.0, 1.0 - (i / (float)num_particles)); // The red channel of the color stores the particle id
+
+																						  // Now sample a point on a sphere to define a direction for points to wander around
+																						  // Get three random numbers
+		u = ((double)rand() / (RAND_MAX));
+		v = ((double)rand() / (RAND_MAX));
+		w = ((double)rand() / (RAND_MAX));
+
+		// Use u to define the angle theta along one direction of the sphere
+		theta = u * 2.0*glm::pi<float>();
+		// Use v to define the angle phi along the other direction of the sphere
+		phi = acos(2.0*v - 1.0);
+		// Use w to define how much we can deviate from the surface of the sphere (change of radius)
+		spray = maxspray*pow((float)w, (float)(1.0 / 3.0)); // Cubic root of w
+
+															// Define the normal and point based on theta, phi and the spray
+		glm::vec3 wander(spray*cos(theta)*sin(phi), spray*sin(theta)*sin(phi), spray*cos(phi));
+
+		// Assign the wander direction to the normal
+		normal = wander;
+
+		// Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) {
+			particle[i*particle_att + k] = position[k];
+			particle[i*particle_att + k + 3] = normal[k];
+			particle[i*particle_att + k + 6] = color[k];
+		}
+	}
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, num_particles * particle_att * sizeof(GLfloat), particle, GL_STATIC_DRAW);
+
+	// Free data buffers
+	delete[] particle;
+
+	// Create resource
+	AddResource(PointSet, object_name, vbo, 0, num_particles);
+}
+
+
+void ResourceManager::CreateControlPoints(std::string object_name, int num_control_points) {
+
+	// Adjust number of control points, if needed, so that we have
+	// groups of four control points
+	if ((num_control_points % 4) != 0) {
+		num_control_points += (4 - (num_control_points % 4));
+	}
+
+	// Variable to hold the control points for the spline
+	GLfloat *control_point;
+
+	// Allocate memory for control points
+	int num_att = 3;
+	control_point = new GLfloat[num_control_points * num_att];
+
+	// Create control points of a piecewise spline
+	// We store the control points in groups of 4 
+	// Each group represents the control points (p0, p1, p2, p3) of a cubic Bezier curve
+	// To ensure C1 continuity, we constrain the first and second point of each curve according to the previous curve
+
+	// Initialize the first two control points to fixed values
+	// First
+	control_point[0] = 0.0;
+	control_point[1] = 0.0;
+	control_point[2] = 0.0;
+	// Second
+	control_point[3] = 0.0;
+	control_point[4] = 3.0;
+	control_point[5] = 0.0;
+
+	// Create remaining points
+	for (int i = 2; i < num_control_points; i++) {
+		// Check if we have the first or second point of a curve
+		// Then we need to constrain the points
+		if (i % 4 == 0) {
+			// Constrain the first point of the curve
+			// p3 = q0, where the previous curve is (p0, p1, p2, p3) and the current curve is (q0, q1, q2, q3)
+			// p3 is at position -1 from the current point q0
+			for (int k = 0; k < 3; k++) {
+				control_point[i*num_att + k] = control_point[(i - 1)*num_att + k];
+			}
+		}
+		else if (i % 4 == 1) {
+			// Constrain the second point of the curve
+			// q1 = 2*p3 - p2
+			// p3 is at position -1 and we add another -1 since we are at i%4 == 1 (not i%4 == 0)
+			// p2 is at position -2 and we add another -1 since we are at i%4 == 1 (not i%4 == 0)
+			for (int k = 0; k < 3; k++) {
+				control_point[i*num_att + k] = 2.0*control_point[(i - 2)*num_att + k] - control_point[(i - 3)*num_att + k];
+			}
+		}
+		else {
+			// Other points: we can freely assign random values to them
+			// Get 3 random numbers
+			float u, v, w;
+			u = ((double)rand() / (RAND_MAX));
+			v = ((double)rand() / (RAND_MAX));
+			w = ((double)rand() / (RAND_MAX));
+			// Define control points based on u, v, and w and scale by the control point index
+			control_point[i*num_att] = u*3.0*(i / 4 + 1);
+			control_point[i*num_att + 1] = v*3.0*(i / 4 + 1);
+			control_point[i*num_att + 2] = w*2.5*(i / 4 + 1);
+			//control_point[i*num_att + 2] = 0.0; // Easier to visualize with the control points on the screen
+		}
+	}
+
+	// Create resource
+	AddResource(Data, object_name, control_point, num_control_points * num_att);
 }
 
 } // namespace game;

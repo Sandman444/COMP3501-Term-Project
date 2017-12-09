@@ -1,28 +1,27 @@
 cmake_minimum_required(VERSION 2.6)
 
 # Name of project
-project(Project)
+project(SceneGraphDemo)
 
 # Specify project files: header files and source files
 set(HDRS
-    camera.h game.h laser.h resource.h resource_manager.h scene_graph.h scene_node.h vehicle.h
+    camera.h game.h resource.h resource_manager.h scene_graph.h scene_node.h InputController.h Updateable.h Helicopter.h GameException.h DirectionalSceneNode.h Projectile.h ProjectileManager.h Tank.h Turret.h Bomb.h Missile.h Laser.h shader_attribute.h
 )
  
 set(SRCS
-    camera.cpp game.cpp main.cpp laser.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp material_vp.glsl material_fp.glsl vehicle.cpp
-
+    camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp Projectile.cpp ProjectileManager.cpp Tank.cpp Turret.cpp Bomb.cpp Missile.cpp Laser.cpp shader_attribute.cpp material_vp.glsl material_fp.glsl fire_fp.glsl fire_gp.glsl fire_vp.glsl
 )
 
 # Add path name to configuration file
 configure_file(path_config.h.in path_config.h)
 
 # Add executable based on the source files
-add_executable(Project ${HDRS} ${SRCS})
+add_executable(SceneGraphDemo ${HDRS} ${SRCS})
 
 # Require OpenGL library
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
-target_link_libraries(Project ${OPENGL_gl_LIBRARY})
+target_link_libraries(SceneGraphDemo ${OPENGL_gl_LIBRARY})
 
 # Other libraries needed
 set(LIBRARY_PATH "" CACHE PATH "Folder with GLEW, GLFW, GLM, and SOIL libraries")
@@ -36,9 +35,9 @@ elseif(WIN32)
     find_library(GLFW_LIBRARY glfw3 HINTS ${LIBRARY_PATH}/lib)
     find_library(SOIL_LIBRARY SOIL HINTS ${LIBRARY_PATH}/lib)
 endif(NOT WIN32)
-target_link_libraries(Project ${GLEW_LIBRARY})
-target_link_libraries(Project ${GLFW_LIBRARY})
-target_link_libraries(Project ${SOIL_LIBRARY})
+target_link_libraries(SceneGraphDemo ${GLEW_LIBRARY})
+target_link_libraries(SceneGraphDemo ${GLFW_LIBRARY})
+target_link_libraries(SceneGraphDemo ${SOIL_LIBRARY})
 
 # The rules here are specific to Windows Systems
 if(WIN32)
@@ -46,5 +45,5 @@ if(WIN32)
     set(CMAKE_SUPPRESS_REGENERATION TRUE)
  
     # This will use the proper libraries in debug mode in Visual Studio
-    set_target_properties(Project PROPERTIES DEBUG_POSTFIX _d)
+    set_target_properties(SceneGraphDemo PROPERTIES DEBUG_POSTFIX _d)
 endif(WIN32)
