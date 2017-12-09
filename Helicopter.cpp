@@ -8,16 +8,16 @@
 
 namespace game {
 
-	Helicopter::Helicopter(ProjectileManager *manager) : DirectionalSceneNode("helicopter", "", "") {
+	Helicopter::Helicopter(ProjectileManager *manager) : DirectionalSceneNode("helicopter", "", "", "") {
 
 		projectileManager = manager;
 
-		body = new SceneNode("helicopter_body", "CubeMesh", "ObjectMaterial");
-		cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "ObjectMaterial");
-		rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "ObjectMaterial");
-		rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
-		tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
-		tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
+		body = new SceneNode("helicopter_body", "CubeMesh", "ObjectMaterial", "");
+		cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "ObjectMaterial", "");
+		rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "ObjectMaterial", "");
+		rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", "");
+		tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", "");
+		tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial", "");
 
 		// Set up body
 		body->SetScale(glm::vec3(0.42, 0.15, 0.15));

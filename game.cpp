@@ -125,6 +125,13 @@ void Game::SetupResources(void){
     // Load material
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
 	ResourceManager::theResourceManager().LoadResource(Material, "ObjectMaterial", filename.c_str());
+
+	std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground_material");
+	ResourceManager::theResourceManager().LoadResource(Material, "GroundMaterial", filename.c_str());
+
+	// Load ground texture
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground.jpg");
+	ResourceManager::theResourceManager().LoadResource(Texture, "TronGrid", filename.c_str());
 }
 
 

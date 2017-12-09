@@ -7,13 +7,13 @@ namespace game {
 
 	int Projectile::projectileId = 0;
 
-	Projectile::Projectile() : DirectionalSceneNode(computeProjectileId(), "", "") {
+	Projectile::Projectile() : DirectionalSceneNode(computeProjectileId(), "", "", "") {
 
 		forward_ = glm::vec3(0, 0, 0);
 		SetPosition(glm::vec3(0, 0, 0));
 	}
 
-	Projectile::Projectile(glm::vec3 position, glm::vec3 forward) : DirectionalSceneNode(computeProjectileId(), "", "") {
+	Projectile::Projectile(glm::vec3 position, glm::vec3 forward) : DirectionalSceneNode(computeProjectileId(), "", "", "") {
 		
 		forward_ = forward;
 		SetPosition(position);
