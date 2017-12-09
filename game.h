@@ -13,12 +13,12 @@
 #include "InputController.h"
 #include "scene_graph.h"
 #include "resource_manager.h"
+#include "ProjectileManager.h"
 #include "camera.h"
-
 #include "Helicopter.h"
 #include "Tank.h"
 #include "Turret.h"
-#include "Ground.h"
+
 
 namespace game {
 
@@ -45,20 +45,19 @@ namespace game {
             // Scene graph containing all nodes to render
             SceneGraph scene_;
 
-            // Resources available to the game
-            ResourceManager resman_;
-
 			// Input controller
 			InputController inputController;
+
+			// Helicopter projectile manager
+			ProjectileManager helicopterProjectileManager;
 
             // Camera abstraction
             Camera camera_;
 
 			//Game Objects
 			Helicopter *helicopter;
-			Tank *tank1, *tank2, *tank3, *tank4;
-			Turret *turret1, *turret2, *turret3, *turret4, *turret5;
-			Ground *ground;
+			Tank *tank;
+			Turret *turret;
 
             // Flag to turn animation on/off
             bool animating_;

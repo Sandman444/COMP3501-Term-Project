@@ -11,7 +11,7 @@ namespace game {
 // They are written here as global variables, but ideally they should be loaded from a configuration file
 
 // Main window settings
-const std::string window_title_g = "Helicopter Assault Game";
+const std::string window_title_g = "Operation: Minimium Requirements";
 const unsigned int window_width_g = 800;
 const unsigned int window_height_g = 600;
 const bool window_full_screen_g = false;
@@ -21,7 +21,7 @@ float camera_near_clip_distance_g = 0.01;
 float camera_far_clip_distance_g = 1000.0;
 float camera_fov_g = 50.0; // Field-of-view of camera
 const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
-glm::vec3 camera_position_g(0.0, 0.0, 50.0);
+glm::vec3 camera_position_g(0.0, 0.0, 0.0);
 glm::vec3 camera_look_at_g(0.0, 0.0, 0.0);
 glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
@@ -42,9 +42,12 @@ void Game::Init(void){
     InitView();
     InitEventHandlers();
 
+	helicopterProjectileManager.setScene(&scene_);
+
 	// Add updateables
 	updateables.push_back((Updateable*)&scene_);
 	updateables.push_back((Updateable*)&inputController);
+	updateables.push_back((Updateable*)&helicopterProjectileManager);
 
     // Set variables
     animating_ = true;
@@ -115,22 +118,19 @@ void Game::InitEventHandlers(void){
 
 
 void Game::SetupResources(void){
-
-	resman_.CreateCylinder("CylinderMesh");
-    resman_.CreateCube("CubeMesh");
-	resman_.CreateWall("WallMesh");
+	//Create the materials the game will be using
+	ResourceManager::theResourceManager().CreateCylinder("CylinderMesh");
+	ResourceManager::theResourceManager().CreateCube("CubeMesh");
+	ResourceManager::theResourceManager().CreateSphere("SphereMesh");
+	ResourceManager::theResourceManager().CreateSphereParticles("SphereParticles");
+	ResourceManager::theResourceManager().CreateTorusParticles("TorusParticles");
+	ResourceManager::theResourceManager().CreateControlPoints("ControlPoints", 4);
 
     // Load materials
-    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground_material");
-    resman_.LoadResource(Material, "GroundMaterial", filename.c_str());
-	filename = std::string(MATERIAL_DIRECTORY) + std::string("/player");
-	resman_.LoadResource(Material, "PlayerMaterial", filename.c_str());
-	filename = std::string(MATERIAL_DIRECTORY) + std::string("/enemy");
-	resman_.LoadResource(Material, "EnemyMaterial", filename.c_str());
-
-	//Load ground texture
-	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground.jpg");
-	resman_.LoadResource(Texture, "TronGrid", filename.c_str());
+    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+	ResourceManager::theResourceManager().LoadResource(Material, "ObjectMaterial", filename.c_str());
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/fire");
+	ResourceManager::theResourceManager().LoadResource(Material, "LaserMaterial", filename.c_str());
 }
 
 
@@ -139,51 +139,32 @@ void Game::SetupScene(void){
     // Set background color for the scene
     scene_.SetBackgroundColor(viewport_background_color_g);
 
-	helicopter = new Helicopter(true, &resman_);
+	//add in the player helicopter
+	helicopter = new Helicopter(&helicopterProjectileManager);
+	helicopter->SetPosition(glm::vec3(0.0, 3.0, 0.0));
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
+	/*
+	turret = new Turret();
+	turret->SetPosition(glm::vec3(0.0, 3.0, 0.5));
+	scene_.addNode(turret);
+	tank = new Tank();
+	tank->SetPosition(glm::vec3(0.0, 3.0, 0.9));
+	scene_.addNode(tank);
 
-	//setup the ground node
-	ground = new Ground("WallMesh", "GroundMaterial", "TronGrid", &resman_);
-	ground->SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(1.0, 0, 0.0)));
-	ground->SetScale(glm::vec3(100.0, 20.0, 1.0));
-	scene_.addNode(ground);
-
-	Helicopter *otherCopter = new Helicopter(false, &resman_);
+	Helicopter *otherCopter = new Helicopter(&helicopterProjectileManager);
 	scene_.addNode(otherCopter);
-	
-	//turrets
-	/*turret1 = new Turret(&resman_);
-	turret1->SetPosition(glm::vec3(-3.0, 0.0, 3.0));
-	scene_.addNode(turret1);
-	turret2 = new Turret(&resman_);
-	turret2->SetPosition(glm::vec3(-2.0, 0.0, 1.0));
-	scene_.addNode(turret2);
-	turret3 = new Turret(&resman_);
-	turret3->SetPosition(glm::vec3(-4.0, 0.0, -1.5));
-	scene_.addNode(turret3);
-	turret4 = new Turret(&resman_);
-	turret4->SetPosition(glm::vec3(-4.0, 0.0, 1.5));
-	scene_.addNode(turret4);*/
-	turret5 = new Turret(&resman_);
-	turret5->SetPosition(glm::vec3(0.5, 0.0, -0.5));
-	scene_.addNode(turret5);
+	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
 
-	//add tanks
-	tank1 = new Tank(&resman_);
-	tank1->SetPosition(glm::vec3(-10.0, 0.0, 2.0));
-	scene_.addNode(tank1);
-	tank2 = new Tank(&resman_);
-	tank2->SetPosition(glm::vec3(-30.0, 0.0, -0.5));
-	scene_.addNode(tank2);
-	tank3 = new Tank(&resman_);
-	tank3->SetPosition(glm::vec3(-20.0, 0.0, 1.0));
-	scene_.addNode(tank3);
-	tank4 = new Tank(&resman_);
-	tank4->SetPosition(glm::vec3(-15.0, 0.0, -1.0));
-	scene_.addNode(tank4);
+	helicopterProjectileManager.addCollideable(otherCopter);
+	helicopterProjectileManager.addCollideable(turret);
+	helicopterProjectileManager.addCollideable(tank);
+	*/
+	/*SceneNode* node = new SceneNode("Thrusters", "TorusParticles", "LaserMaterial");
+	node->SetPosition(glm::vec3(-1.0, 0.0, 0.0));
+	scene_.addNode(node);*/
 }
 
 

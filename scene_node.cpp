@@ -5,6 +5,7 @@
 #include <iostream>
 #include <time.h>
 
+
 #include "camera.h"
 #include "scene_node.h"
 
@@ -17,17 +18,18 @@ SceneNode::SceneNode(const std::string name) {
 
 	// Other attributes
 	scale_ = glm::vec3(1.0, 1.0, 1.0);
+	blending_ = false;
 
 	// Hierarchy
-	parent_ = NULL;
+	parent_ = NULL;	
 }
 
-SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name, ResourceManager* resman){
+SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name){
 
 	// Get resources
 	Resource *geom;
 	if (object_name != std::string("")) {
-		geom = resman->GetResource(object_name);
+		geom = ResourceManager::theResourceManager().GetResource(object_name);
 		if (!geom) {
 			throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\"")));
 		}
@@ -38,24 +40,13 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 
 	Resource *mat;
 	if (material_name != std::string("")) {
-		mat = resman->GetResource(material_name);
+		mat = ResourceManager::theResourceManager().GetResource(material_name);
 		if (!mat) {
 			throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
 		}
 	}
 	else {
 		mat = NULL;
-	}
-
-	Resource *tex;
-	if (texture_name != std::string("")) {
-		tex = resman->GetResource(texture_name);
-		if (!tex) {
-			throw(GameException(std::string("Could not find resource \"") + texture_name + std::string("\"")));
-		}
-	}
-	else {
-		tex = NULL;
 	}
 
     // Set name of scene node
@@ -91,32 +82,29 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 
     // Other attributes
     scale_ = glm::vec3(1.0, 1.0, 1.0);
+	blending_ = false;
 
     // Hierarchy
     parent_ = NULL;
-
-	// Set texture
-	if (tex) {
-		texture_ = tex->GetResource();
-	}
-	else {
-		texture_ = 0;
-	}
 }
 
 
 SceneNode::~SceneNode(){
+	for (std::vector<SceneNode*>::iterator i = children_.begin(); i != children_.end(); ++i) {
+		delete *i;
+	}
+}
+
+float SceneNode::getBoundingSphereRadius(void) const {
+	return GetScale().x > GetScale().y ? std::max(GetScale().x, GetScale().z) : std::max(GetScale().y, GetScale().z);
 }
 
 
-std::string SceneNode::GetName(void){
+const std::string SceneNode::GetName(void) const {
 
     return name_;
 }
 
-void SceneNode::setName(std::string newName) {
-	name_ = newName;
-}
 
 glm::vec3 SceneNode::GetPosition(void) const {
 
@@ -153,12 +141,15 @@ void SceneNode::SetScale(glm::vec3 scale){
     scale_ = scale;
 }
 
+void SceneNode::SetBlending(bool blending) {
+
+	blending_ = blending;
+}
 
 void SceneNode::Translate(glm::vec3 trans){
 
     position_ += trans;
 }
-
 
 void SceneNode::Rotate(glm::quat rot){
 
@@ -203,6 +194,17 @@ GLuint SceneNode::GetMaterial(void) const {
 
 
 glm::mat4 SceneNode::Draw(Camera *camera, glm::mat4 parent_transf){
+	// Select blending or not
+	if (blending_) {
+		// Disable z-buffer
+		glDisable(GL_DEPTH_TEST);
+
+		// Enable blending
+		glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Simpler form
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
+	}
 
     if ((array_buffer_ > 0) && (material_ > 0)){
         // Select proper material (shader program)
@@ -270,23 +272,6 @@ glm::mat4 SceneNode::SetupShader(GLuint program, glm::mat4 parent_transf){
     GLint world_mat = glGetUniformLocation(program, "world_mat");
     glUniformMatrix4fv(world_mat, 1, GL_FALSE, glm::value_ptr(local_transf));
 
-	// Normal matrix
-	glm::mat4 normal_matrix = glm::transpose(glm::inverse(transf));
-	GLint normal_mat = glGetUniformLocation(program, "normal_mat");
-	glUniformMatrix4fv(normal_mat, 1, GL_FALSE, glm::value_ptr(normal_matrix));
-
-	// Texture
-	if (texture_) {
-		GLint tex = glGetUniformLocation(program, "texture_map");
-		glUniform1i(tex, 0); // Assign the first texture to the map
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture_); // First texture we bind
-												// Define texture interpolation
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-
     // Timer
     GLint timer_var = glGetUniformLocation(program, "timer");
     double current_time = glfwGetTime();
@@ -301,6 +286,16 @@ void SceneNode::addChild(SceneNode *node){
 
     children_.push_back(node);
     node->parent_ = this;
+}
+
+void SceneNode::removeChild(std::string nodeName) {
+	for (std::vector<SceneNode*>::iterator i = children_.begin(); i != children_.end(); ++i) {
+		if ((*i)->GetName() == nodeName) {
+			delete *i;
+			children_.erase(i);
+			return;
+		}
+	}
 }
 
 

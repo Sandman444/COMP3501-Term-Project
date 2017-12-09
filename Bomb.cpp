@@ -11,6 +11,12 @@ namespace game {
 		this->addChild(projectileModel);
 
 		speed = 0.01;
+
+		//add the explosion to the bomb to show when it blows up
+		//NOTE: Needs explosion effect
+		projectileEffect = new SceneNode(GetName() + "Effect", "TorusParticles", "LaserMaterial");
+		//projectileEffect->SetPosition(glm::vec3(0, 0, 0));
+		projectileModel->addChild(projectileEffect);
 	}
 
 

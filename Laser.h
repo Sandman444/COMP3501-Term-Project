@@ -25,6 +25,7 @@ namespace game {
 	private:
 
 		bool firing;
+		SceneNode* laserEffect;
 	};
 
 } // namespace game

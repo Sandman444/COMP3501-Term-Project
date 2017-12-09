@@ -11,6 +11,12 @@ namespace game {
 		SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(0, 0, 1.0)));
 		Rotate(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(0, 1.0, 0)));
 		SetPosition(glm::vec3(-GetScale().y / 2, 0, 0));
+
+		//add the thrusters to the missile
+		//NOTE: needs texture support
+		laserEffect = new SceneNode(GetName() + "Effect", "TorusParticles", "LaserMaterial");
+		laserEffect->SetPosition(this->GetPosition());
+		this->addChild(laserEffect);
 	}
 
 

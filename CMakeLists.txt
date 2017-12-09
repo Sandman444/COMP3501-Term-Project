@@ -5,12 +5,11 @@ project(SceneGraphDemo)
 
 # Specify project files: header files and source files
 set(HDRS
-    Ground.h Turret.h camera.h game.h resource.h resource_manager.h scene_graph.h scene_node.h InputController.h Updateable.h Helicopter.h GameException.h DirectionalSceneNode.h Tank.h
- )
+    camera.h game.h resource.h resource_manager.h scene_graph.h scene_node.h InputController.h Updateable.h Helicopter.h GameException.h DirectionalSceneNode.h Projectile.h ProjectileManager.h Tank.h Turret.h Bomb.h Missile.h Laser.h shader_attribute.h
+)
  
 set(SRCS
-    Ground.cpp camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp Tank.cpp Turret.cpp ground_material_vp.glsl ground_material_fp.glsl
- player_vp.glsl player_fp.glsl enemy_vp.glsl enemy_fp.glsl
+    camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp Projectile.cpp ProjectileManager.cpp Tank.cpp Turret.cpp Bomb.cpp Missile.cpp Laser.cpp shader_attribute.cpp material_vp.glsl material_fp.glsl fire_fp.glsl fire_gp.glsl fire_vp.glsl
 )
 
 # Add path name to configuration file

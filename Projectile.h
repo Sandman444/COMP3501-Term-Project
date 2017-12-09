@@ -26,7 +26,7 @@ namespace game {
 		float getBoundingSphereRadius(void) const override;
 		bool isOutOfRange();
 
-		SceneNode *projectileModel;
+		SceneNode *projectileModel, *projectileEffect;
 
 
 	protected:

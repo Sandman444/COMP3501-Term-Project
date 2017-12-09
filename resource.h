@@ -9,7 +9,7 @@
 namespace game {
 
     // Possible resource types
-    typedef enum Type { Material, PointSet, Mesh, Texture } ResourceType;
+    typedef enum Type { Material, PointSet, Mesh, Texture, Data } ResourceType;
 
     // Class that holds one resource
     class Resource {
@@ -25,19 +25,24 @@ namespace game {
                     GLuint array_buffer_; // Buffers for geometry
                     GLuint element_array_buffer_;
                 };
+				struct {
+					GLfloat *data_;
+				};
             };
             GLsizei size_; // Number of primitives in geometry
 
         public:
             Resource(ResourceType type, std::string name, GLuint resource, GLsizei size);
             Resource(ResourceType type, std::string name, GLuint array_buffer, GLuint element_array_buffer, GLsizei size);
-            ~Resource();
+			Resource(ResourceType type, std::string name, GLfloat *data, GLsizei size);
+			~Resource();
             ResourceType GetType(void) const;
             const std::string GetName(void) const;
             GLuint GetResource(void) const;
             GLuint GetArrayBuffer(void) const;
             GLuint GetElementArrayBuffer(void) const;
             GLsizei GetSize(void) const;
+			GLfloat *GetData(void) const;
 
     }; // class Resource
 

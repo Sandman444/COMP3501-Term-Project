@@ -9,19 +9,21 @@ namespace game {
 
 	public:
 		// Constructor
-		Tank(ResourceManager* resman);
+		Tank();
 
 		// Destructor
 		~Tank();
 
-		void Update(SceneNode* player);
+		void Update(void) override;
 
-		void moveLeft();
+		/*void moveLeft();
 		void moveRight();
 		void moveForward();
-		void moveBackward();
+		void moveBackward();*/
 		void turnLeft();
 		void turnRight();
+
+		float getBoundingSphereRadius(void) const override;
 
 	private:
 		SceneNode *tank_body, *gun_turret, *gun_barrel, *tread1, *tread2;
