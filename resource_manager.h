@@ -6,6 +6,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <SOIL/SOIL.h>
 
 #include "resource.h"
 
@@ -19,15 +20,9 @@ namespace game {
     class ResourceManager {
 
         public:
-
-			// Singleton Manager
-			inline static ResourceManager & theResourceManager() {
-				static ResourceManager resourceManager;
-				return resourceManager;
-			}
-			ResourceManager(ResourceManager const&) = delete;
-			void operator=(ResourceManager const&) = delete;
-
+            // Generic methods
+            ResourceManager(void);
+            ~ResourceManager();
             // Add a resource that was already loaded and allocated to memory
             void AddResource(ResourceType type, const std::string name, GLuint resource, GLsizei size);
             void AddResource(ResourceType type, const std::string name, GLuint array_buffer, GLuint element_array_buffer, GLsizei size);
@@ -45,10 +40,10 @@ namespace game {
             void CreateCube(std::string object_name);
 			// Create Cylinder
 			void CreateCylinder(std::string object_name, float cylinder_radius = 0.5, float cylinder_height = 1.0, int num_cylinder_samples = 90);
+			//Create Wall
+			void CreateWall(std::string object_name);
 
         private:
-			ResourceManager() {};
-
             // List storing all resources
             std::unordered_map<std::string, Resource*> resource_; 
  
@@ -57,6 +52,7 @@ namespace game {
             void LoadMaterial(const std::string name, const char *prefix);
             // Load a text file into memory (could be source code)
             std::string LoadTextFile(const char *filename);
+			void LoadTexture(const std::string name, const char *filename);
 
     }; // class ResourceManager
 

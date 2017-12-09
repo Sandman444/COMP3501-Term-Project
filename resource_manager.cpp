@@ -9,6 +9,13 @@
 
 namespace game {
 
+ResourceManager::ResourceManager(void){
+}
+
+
+ResourceManager::~ResourceManager(){
+}
+
 
 void ResourceManager::AddResource(ResourceType type, const std::string name, GLuint resource, GLsizei size){
 
@@ -35,9 +42,13 @@ void ResourceManager::LoadResource(ResourceType type, const std::string name, co
     // Call appropriate method depending on type of resource
     if (type == Material){
         LoadMaterial(name, filename);
-    } else {
-        throw(std::invalid_argument(std::string("Invalid type of resource")));
     }
+	else if (type == Texture) {
+		LoadTexture(name, filename);
+	}
+	else {
+		throw(std::invalid_argument(std::string("Invalid type of resource")));
+	}
 }
 
 
@@ -139,6 +150,18 @@ std::string ResourceManager::LoadTextFile(const char *filename){
     return content;
 }
 
+void ResourceManager::LoadTexture(const std::string name, const char *filename) {
+
+	// Load texture from file
+	std::cout << "Loading a texture" << std::endl;
+	GLuint texture = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
+	if (!texture) {
+		throw(std::ios_base::failure(std::string("Error loading texture ") + std::string(filename) + std::string(": ") + std::string(SOIL_last_result())));
+	}
+
+	// Create resource
+	AddResource(Texture, name, texture, 0);
+}
 
 void ResourceManager::CreateTorus(std::string object_name, float loop_radius, float circle_radius, int num_loop_samples, int num_circle_samples){
 
@@ -540,6 +563,35 @@ void ResourceManager::CreateCylinder(std::string object_name, float cylinder_rad
 
 	// Create resource
 	AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
+}
+
+void ResourceManager::CreateWall(std::string object_name) {
+
+	// Definition of the wall
+	// The wall is simply a quad formed with two triangles
+	GLfloat vertex[] = {
+		// Position, normal, color, texture coordinates
+		// Here, color stores the tangent of the vertex
+		-1.0, -1.0, 0.0,  0.0, 1.0,  0.0,  1.0, 0.0, 0.0,  0.0, 0.0,
+		-1.0,  1.0, 0.0,  0.0, 1.0,  0.0,  1.0, 0.0, 0.0,  0.0, 1.0,
+		1.0,  1.0, 0.0,  0.0, 1.0,  0.0,  1.0, 0.0, 0.0,  1.0, 1.0,
+		1.0, -1.0, 0.0,  0.0, 1.0,  0.0,  1.0, 0.0, 0.0,  1.0, 0.0 };
+	GLuint face[] = { 0, 2, 1,
+		0, 3, 2 };
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo, ebo;
+
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, 4 * 11 * sizeof(GLfloat), vertex, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 2 * 3 * sizeof(GLuint), face, GL_STATIC_DRAW);
+
+	// Create resource
+	AddResource(Mesh, object_name, vbo, ebo, 2 * 3);
 }
 
 } // namespace game;
