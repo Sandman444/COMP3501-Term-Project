@@ -15,6 +15,7 @@
 #include "resource_manager.h"
 #include "ProjectileManager.h"
 #include "camera.h"
+#include "Ground.h"
 #include "Helicopter.h"
 #include "Tank.h"
 #include "Turret.h"
@@ -55,6 +56,7 @@ namespace game {
             Camera camera_;
 
 			//Game Objects
+			Ground *ground;
 			Helicopter *helicopter;
 			Tank *tank;
 			Turret *turret;

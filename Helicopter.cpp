@@ -62,12 +62,12 @@ namespace game {
 		side_ = glm::vec3(0, 0, 1);
 
 		// Other settings
-		accelerationSpeed = 0.001f;
+		accelerationSpeed = 0.002f;
 		turnSpeed = 0.0008f;
 		tiltSpeed = 0.001f;
 
 		tiltFriction = 0.03f;
-		airFriction = 0.02f;
+		airFriction = 0.015f;
 		levelingForce = 0.07f;
 	}
 

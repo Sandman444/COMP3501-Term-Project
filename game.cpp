@@ -121,12 +121,15 @@ void Game::SetupResources(void){
 	ResourceManager::theResourceManager().CreateCylinder("CylinderMesh");
 	ResourceManager::theResourceManager().CreateCube("CubeMesh");
 	ResourceManager::theResourceManager().CreateSphere("SphereMesh");
+	ResourceManager::theResourceManager().CreateWall("WallMesh");
+
+	std::string filename;
 
     // Load material
-    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
 	ResourceManager::theResourceManager().LoadResource(Material, "ObjectMaterial", filename.c_str());
 
-	std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground_material");
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground_material");
 	ResourceManager::theResourceManager().LoadResource(Material, "GroundMaterial", filename.c_str());
 
 	// Load ground texture
@@ -139,6 +142,9 @@ void Game::SetupScene(void){
 
     // Set background color for the scene
     scene_.SetBackgroundColor(viewport_background_color_g);
+
+	ground = new Ground("WallMesh", "GroundMaterial", "TronGrid");
+	scene_.addNode(ground);
 
 	helicopter = new Helicopter(&helicopterProjectileManager);
 	helicopter->SetPosition(glm::vec3(0.0, 3.0, 0.0));
