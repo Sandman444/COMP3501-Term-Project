@@ -5,7 +5,7 @@
 
 namespace game {
 
-	Laser::Laser() : SceneNode("laser", "CylinderMesh", "EnemyMaterial", "") {
+	Laser::Laser() : SceneNode("laser", "TorusParticles", "LaserMaterial", "Flame") {
 
 		SetScale(glm::vec3(0.01, 50.0, 0.01));
 		SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(0, 0, 1.0)));

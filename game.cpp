@@ -126,6 +126,9 @@ void Game::SetupResources(void){
 	ResourceManager::theResourceManager().CreateCube("CubeMesh");
 	ResourceManager::theResourceManager().CreateSphere("SphereMesh");
 	ResourceManager::theResourceManager().CreateWall("WallMesh");
+	ResourceManager::theResourceManager().CreateSphereParticles("SphereParticles");
+	ResourceManager::theResourceManager().CreateTorusParticles("TorusParticles");
+
 
 	std::string filename;
 
@@ -141,6 +144,9 @@ void Game::SetupResources(void){
 
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/enemy");
 	ResourceManager::theResourceManager().LoadResource(Material, "EnemyMaterial", filename.c_str());
+
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/laser");
+	ResourceManager::theResourceManager().LoadResource(Material, "LaserMaterial", filename.c_str());
 
 	// Load ground texture
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground.jpg");
