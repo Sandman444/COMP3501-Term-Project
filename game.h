@@ -13,12 +13,11 @@
 #include "InputController.h"
 #include "scene_graph.h"
 #include "resource_manager.h"
-#include "ProjectileManager.h"
+#include "PlayerProjectileManager.h"
+#include "EnemyManager.h"
 #include "camera.h"
 #include "Ground.h"
 #include "Helicopter.h"
-#include "Tank.h"
-#include "Turret.h"
 
 
 namespace game {
@@ -50,7 +49,10 @@ namespace game {
 			InputController inputController;
 
 			// Helicopter projectile manager
-			ProjectileManager helicopterProjectileManager;
+			PlayerProjectileManager helicopterProjectileManager;
+
+			// Enemy manager
+			EnemyManager enemyManager;
 
             // Camera abstraction
             Camera camera_;
@@ -58,8 +60,6 @@ namespace game {
 			//Game Objects
 			Ground *ground;
 			Helicopter *helicopter;
-			Tank *tank;
-			Turret *turret;
 
             // Flag to turn animation on/off
             bool animating_;

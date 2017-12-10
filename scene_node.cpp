@@ -245,6 +245,10 @@ void SceneNode::Update(void){
     // Do nothing for this generic type of scene node
 }
 
+void SceneNode::Update(glm::vec3) {
+
+}
+
 
 glm::mat4 SceneNode::SetupShader(GLuint program, glm::mat4 parent_transf){
 

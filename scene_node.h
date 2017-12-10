@@ -56,6 +56,7 @@ namespace game {
 
             // Update the node
             virtual void Update(void);
+			virtual void Update(glm::vec3 position);
 
             // OpenGL variables
             GLenum GetMode(void) const;

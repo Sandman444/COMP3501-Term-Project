@@ -1,5 +1,5 @@
-#ifndef PROJECTILEMANAGER_H
-#define PROJECTILEMANAGER_H
+#ifndef PLAYERPROJECTILEMANAGER_H
+#define PLAYERPROJECTILEMANAGER_H
 
 #include <vector>
 
@@ -12,14 +12,14 @@ namespace game {
 
 	class SceneGraph;
 
-	class ProjectileManager : public Updateable {
+	class PlayerProjectileManager : public Updateable {
 
 	public:
 		// Constructor
-		ProjectileManager();
+		PlayerProjectileManager();
 
 		// Destructor
-		~ProjectileManager();
+		~PlayerProjectileManager();
 
 		void update();
 		void setScene(SceneGraph *sceneGraph);
@@ -38,7 +38,6 @@ namespace game {
 		
 		std::vector<SceneNode*> collideables;
 		std::vector<Projectile*> projectiles;
-		std::vector<Projectile*> idleProjectiles;
 
 		float distanceThreshold = 0.6f;
 

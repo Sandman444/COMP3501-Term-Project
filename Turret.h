@@ -2,6 +2,7 @@
 #define TURRET_H
 
 #include "DirectionalSceneNode.h"
+#include "EnemyProjectileManager.h"
 
 namespace game {
 
@@ -9,7 +10,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Turret();
+		Turret(EnemyProjectileManager *manager);
 
 		// Destructor
 		~Turret();
@@ -22,6 +23,8 @@ namespace game {
 		float getBoundingSphereRadius(void) const override;
 
 	private:
+
+		EnemyProjectileManager *projectileManager;
 		SceneNode *body, *gun_housing, *barrel;
 
 		glm::vec3 velocity;

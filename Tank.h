@@ -2,6 +2,7 @@
 #define TANK_H
 
 #include "DirectionalSceneNode.h"
+#include "EnemyProjectileManager.h"
 
 namespace game {
 
@@ -9,7 +10,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Tank();
+		Tank(EnemyProjectileManager *manager);
 
 		// Destructor
 		~Tank();
@@ -26,6 +27,8 @@ namespace game {
 		float getBoundingSphereRadius(void) const override;
 
 	private:
+
+		EnemyProjectileManager *projectileManager;
 		SceneNode *tank_body, *gun_turret, *gun_barrel, *tread1, *tread2;
 
 		glm::vec3 velocity;

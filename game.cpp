@@ -20,7 +20,8 @@ const bool window_full_screen_g = false;
 float camera_near_clip_distance_g = 0.01;
 float camera_far_clip_distance_g = 1000.0;
 float camera_fov_g = 50.0; // Field-of-view of camera
-const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
+const glm::vec3 viewport_background_color_g(100.0 / 255.0, 181.0 / 255.0, 246.0 / 255.0);
+//const glm::vec3 viewport_background_color_g(1, 1, 1);
 glm::vec3 camera_position_g(0.0, 0.0, 0.0);
 glm::vec3 camera_look_at_g(0.0, 0.0, 0.0);
 glm::vec3 camera_up_g(0.0, 1.0, 0.0);
@@ -43,11 +44,14 @@ void Game::Init(void){
     InitEventHandlers();
 
 	helicopterProjectileManager.setScene(&scene_);
+	enemyManager.setScene(&scene_);
+	enemyManager.setPlayerManager(&helicopterProjectileManager);
 
 	// Add updateables
 	updateables.push_back((Updateable*)&scene_);
 	updateables.push_back((Updateable*)&inputController);
 	updateables.push_back((Updateable*)&helicopterProjectileManager);
+	updateables.push_back((Updateable*)&enemyManager);
 
     // Set variables
     animating_ = true;
@@ -132,6 +136,12 @@ void Game::SetupResources(void){
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground_material");
 	ResourceManager::theResourceManager().LoadResource(Material, "GroundMaterial", filename.c_str());
 
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/player");
+	ResourceManager::theResourceManager().LoadResource(Material, "PlayerMaterial", filename.c_str());
+
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/enemy");
+	ResourceManager::theResourceManager().LoadResource(Material, "EnemyMaterial", filename.c_str());
+
 	// Load ground texture
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground.jpg");
 	ResourceManager::theResourceManager().LoadResource(Texture, "TronGrid", filename.c_str());
@@ -146,27 +156,22 @@ void Game::SetupScene(void){
 	ground = new Ground("WallMesh", "GroundMaterial", "TronGrid");
 	scene_.addNode(ground);
 
-	helicopter = new Helicopter(&helicopterProjectileManager);
+	helicopter = new Helicopter("PlayerMaterial", &helicopterProjectileManager);
 	helicopter->SetPosition(glm::vec3(0.0, 3.0, 0.0));
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
 	camera_.setViewMode("third person");
 	scene_.addNode(helicopter);
 
-	turret = new Turret();
-	turret->SetPosition(glm::vec3(0.0, 3.0, 0.5));
-	scene_.addNode(turret);
-	tank = new Tank();
-	tank->SetPosition(glm::vec3(0.0, 3.0, 0.9));
-	scene_.addNode(tank);
+	enemyManager.setPlayer(helicopter);
+	enemyManager.spawnTank(glm::vec3(0.0, 3.0, 0.9));
+	enemyManager.spawnTurret(glm::vec3(0.0, 3.0, 0.5));
 
-	Helicopter *otherCopter = new Helicopter(&helicopterProjectileManager);
+	Helicopter *otherCopter = new Helicopter("EnemyMaterial", &helicopterProjectileManager);
 	scene_.addNode(otherCopter);
 	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
 
 	helicopterProjectileManager.addCollideable(otherCopter);
-	helicopterProjectileManager.addCollideable(turret);
-	helicopterProjectileManager.addCollideable(tank);
 }
 
 
@@ -240,7 +245,8 @@ void Game::ResizeCallback(GLFWwindow* window, int width, int height){
 
 
 Game::~Game(){
-    
+
+	delete ground;
     glfwTerminate();
 }
 

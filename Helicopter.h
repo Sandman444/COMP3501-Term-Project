@@ -3,7 +3,7 @@
 
 
 #include "DirectionalSceneNode.h"
-#include "ProjectileManager.h"
+#include "PlayerProjectileManager.h"
 #include "Laser.h"
 
 namespace game {
@@ -12,7 +12,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Helicopter(ProjectileManager *manager);
+		Helicopter(std::string, PlayerProjectileManager *manager);
 
 		// Destructor
 		~Helicopter();
@@ -35,7 +35,7 @@ namespace game {
 
 	private:
 
-		ProjectileManager *projectileManager;
+		PlayerProjectileManager *projectileManager;
 
 		SceneNode *body, *cockpit, *rotorbladeJoint, *rotorBlade, *tail, *tailBlade;
 
