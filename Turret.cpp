@@ -38,6 +38,10 @@ namespace game {
 		delete body, gun_housing, barrel;
 	}
 
+	float Turret::getLevel() {
+		return body->GetScale().y / 2;
+	}
+
 	void Turret::turnLeft() {
 		turnDirection += 1;
 	}
@@ -46,8 +50,32 @@ namespace game {
 		turnDirection += -1;
 	}
 
-	void Turret::Update(void) {
+	void Turret::Update(glm::vec3 playerPosition) {
+		//std::cout << "Player position: (" << player->GetPosition().x<<", " << player->GetPosition().y << ", " << player->GetPosition().z << ") " << std::endl;
+		//std::cout << "Current position: (" << body->GetPosition().x << ", " << body->GetPosition().y << ", " << body->GetPosition().z << ") " << std::endl;
 
+		//find position of player and self
+		glm::vec2 playerPos = glm::vec2(playerPosition.x, playerPosition.z);
+		glm::vec2 currentPos = glm::vec2(GetPosition().x, GetPosition().z);
+
+		//find vector between self and player then normalize
+		glm::vec2 newDirection = glm::vec2(0, 0);
+		newDirection = currentPos - playerPos;
+		newDirection = glm::normalize(newDirection);
+		glm::vec2 forward = glm::vec2(getForward().x, getForward().z);
+		forward = glm::normalize(forward);
+		float theta = 0;
+		if (newDirection.x != NULL) {
+			theta = acos(glm::dot(newDirection, forward) / (glm::length(newDirection) * glm::length(newDirection)));
+		}
+
+		//change the orientation of the turret
+		if (newDirection.y < 0) {
+			gun_housing->SetOrientation(glm::angleAxis(-theta, glm::vec3(0.0, 1.0, 0.0)));
+		}
+		else {
+			gun_housing->SetOrientation(glm::angleAxis(theta, glm::vec3(0.0, 1.0, 0.0)));
+		}
 	}
 
 	float Turret::getBoundingSphereRadius(void) const {

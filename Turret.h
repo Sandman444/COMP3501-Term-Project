@@ -15,11 +15,12 @@ namespace game {
 		// Destructor
 		~Turret();
 
-		void Update(void) override;
+		void Update(glm::vec3 playerPosition) override;
 
 		void turnLeft();
 		void turnRight();
 
+		float getLevel();
 		float getBoundingSphereRadius(void) const override;
 
 	private:

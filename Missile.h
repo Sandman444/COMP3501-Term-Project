@@ -9,7 +9,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Missile(glm::vec3 position, glm::vec3 forward);
+		Missile(std::string material, glm::vec3 position, glm::vec3 forward);
 
 		// Destructor
 		~Missile();

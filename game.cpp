@@ -164,8 +164,15 @@ void Game::SetupScene(void){
 	scene_.addNode(helicopter);
 
 	enemyManager.setPlayer(helicopter);
-	enemyManager.spawnTank(glm::vec3(0.0, 3.0, 0.9));
-	enemyManager.spawnTurret(glm::vec3(0.0, 3.0, 0.5));
+	enemyManager.spawnTank(glm::vec2(-10.0, 2.0));
+	enemyManager.spawnTank(glm::vec2(-30.0, -0.5));
+	enemyManager.spawnTank(glm::vec2(-20.0, 1.0));
+	enemyManager.spawnTank(glm::vec2(-15.0, -1.0));
+	enemyManager.spawnTurret(glm::vec2(-3.0, 3.0));
+	enemyManager.spawnTurret(glm::vec2(-2.0, 1.0));
+	enemyManager.spawnTurret(glm::vec2(-4.0, -1.5));
+	enemyManager.spawnTurret(glm::vec2(-4.0, 1.5));
+	enemyManager.spawnTurret(glm::vec2(0.5, -0.5));
 
 	Helicopter *otherCopter = new Helicopter("EnemyMaterial", &helicopterProjectileManager);
 	scene_.addNode(otherCopter);

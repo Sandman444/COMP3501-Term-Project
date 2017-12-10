@@ -81,8 +81,41 @@ namespace game {
 		turnDirection += -1;
 	}
 
-	void Tank::Update(void) {
+	void Tank::Update(glm::vec3 playerPosition) {
+		//find position of player and self
+		glm::vec2 playerPos = glm::vec2(playerPosition.x, playerPosition.z);
+		glm::vec2 currentPos = glm::vec2(GetPosition().x, GetPosition().z);
 
+		//find vector between self and player then normalize
+		glm::vec2 newDirection = glm::vec2(0, 0);
+		newDirection = currentPos - playerPos;
+		newDirection = glm::normalize(newDirection);
+		glm::vec2 forward = glm::vec2(getForward().x, getForward().z);
+		forward = glm::normalize(forward);
+		float theta = 0;
+		if (newDirection.x != NULL) {
+			theta = acos(glm::dot(newDirection, forward) / (glm::length(newDirection) * glm::length(newDirection)));
+		}
+
+		//change the orientation of the turret
+		if (newDirection.y < 0) {
+			gun_turret->SetOrientation(glm::angleAxis(-theta, glm::vec3(0.0, 1.0, 0.0)));
+		}
+		else {
+			gun_turret->SetOrientation(glm::angleAxis(theta, glm::vec3(0.0, 1.0, 0.0)));
+		}
+
+		this->Translate(velocity);
+
+		double currentTime = glfwGetTime();
+		if (currentTime - lastMissileFire > missileFireInterval) {
+			lastMissileFire = currentTime;
+			projectileManager->spawnMissile(GetPosition(), getForward(), GetOrientation());
+		}
+	}
+
+	float Tank::getLevel() {
+		return tank_body->GetScale().y / 2;
 	}
 
 	float Tank::getBoundingSphereRadius(void) const {

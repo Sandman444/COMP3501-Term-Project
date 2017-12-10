@@ -53,10 +53,9 @@ namespace game {
 	}
 
 	void EnemyProjectileManager::spawnMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation) {
-		Missile *newMissile;
-		newMissile = new Missile(position, initialForward);
-		scene->addNode(newMissile);
+		Missile *newMissile = new Missile("EnemyMaterial", position, initialForward);
 		newMissile->SetOrientation(orientation);
+		scene->addNode(newMissile);
 		projectiles.push_back(newMissile);
 	}
 

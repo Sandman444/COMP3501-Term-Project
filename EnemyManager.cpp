@@ -7,7 +7,7 @@
 namespace game {
 
 	EnemyManager::EnemyManager(void) {
-
+		
 	}
 
 
@@ -17,6 +17,7 @@ namespace game {
 
 	void EnemyManager::setScene(SceneGraph *sceneGraph) {
 		scene = sceneGraph;
+		enemyProjectileManager.setScene(scene);
 	}
 
 	void EnemyManager::setPlayerManager(PlayerProjectileManager *manager) {
@@ -35,17 +36,17 @@ namespace game {
 		}
 	}
 
-	void EnemyManager::spawnTank(glm::vec3 position) {
+	void EnemyManager::spawnTank(glm::vec2 position) {
 		Tank *newTank = new Tank(&enemyProjectileManager);
-		newTank->SetPosition(position);
+		newTank->SetPosition(glm::vec3(position.x, newTank->getLevel(), position.y));
 		scene->addNode(newTank);
 		enemies.push_back(newTank);
 		playerManager->addCollideable(newTank);
 	}
 
-	void EnemyManager::spawnTurret(glm::vec3 position) {
+	void EnemyManager::spawnTurret(glm::vec2 position) {
 		Turret *newTurret = new Turret(&enemyProjectileManager);
-		newTurret->SetPosition(position);
+		newTurret->SetPosition(glm::vec3(position.x, newTurret->getLevel(), position.y));
 		scene->addNode(newTurret);
 		enemies.push_back(newTurret);
 		playerManager->addCollideable(newTurret);

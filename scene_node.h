@@ -65,6 +65,7 @@ namespace game {
             GLsizei GetSize(void) const;
             GLuint GetMaterial(void) const;
 
+
             // Hierarchy-related methods
             void addChild(SceneNode *node);
 			void removeChild(std::string nodeName);

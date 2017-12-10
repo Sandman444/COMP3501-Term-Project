@@ -27,8 +27,8 @@ namespace game {
 		void setPlayerManager(PlayerProjectileManager *manager);
 		void setPlayer(SceneNode *thePlayer);
 
-		void spawnTank(glm::vec3 position);
-		void spawnTurret(glm::vec3 position);
+		void spawnTank(glm::vec2 position);
+		void spawnTurret(glm::vec2 position);
 		void spawnHeli(glm::vec3 position);
 
 		

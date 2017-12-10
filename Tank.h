@@ -15,7 +15,7 @@ namespace game {
 		// Destructor
 		~Tank();
 
-		void Update(void) override;
+		void Update(glm::vec3 playerPosition) override;
 
 		/*void moveLeft();
 		void moveRight();
@@ -24,6 +24,7 @@ namespace game {
 		void turnLeft();
 		void turnRight();
 
+		float getLevel();
 		float getBoundingSphereRadius(void) const override;
 
 	private:
@@ -38,6 +39,9 @@ namespace game {
 		float turnVelocity = 0;
 		int turnDirection = 0;
 		float turnSpeed;
+
+		double lastMissileFire = 0;
+		double missileFireInterval = 0.5;
 	};
 
 } // namespace game

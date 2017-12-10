@@ -11,7 +11,7 @@
 
 namespace game {
 
-SceneGraph::SceneGraph(void){
+SceneGraph::SceneGraph(){
 
     background_color_ = glm::vec3(0.0, 0.0, 0.0);
 
@@ -20,6 +20,7 @@ SceneGraph::SceneGraph(void){
 
 
 SceneGraph::~SceneGraph(){
+	//delete root_;
 }
 
 
@@ -40,7 +41,6 @@ void SceneGraph::setRoot(SceneNode* root) {
 }
 
 void SceneGraph::addNode(SceneNode* newNode) {
-
 	root_->addChild(newNode);
 }
 
