@@ -25,7 +25,7 @@ namespace game {
         public:
             // Create scene node from given resources
 			SceneNode(const std::string name);
-            SceneNode(const std::string name, std::string object_name, std::string material_name);
+            SceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name);
 
             // Destructor
             ~SceneNode();
@@ -56,6 +56,7 @@ namespace game {
 
             // Update the node
             virtual void Update(void);
+			virtual void Update(glm::vec3 position);
 
             // OpenGL variables
             GLenum GetMode(void) const;
@@ -63,6 +64,7 @@ namespace game {
             GLuint GetElementArrayBuffer(void) const;
             GLsizei GetSize(void) const;
             GLuint GetMaterial(void) const;
+
 
             // Hierarchy-related methods
             void addChild(SceneNode *node);
@@ -86,6 +88,7 @@ namespace game {
             GLenum mode_; // Type of geometry
             GLsizei size_; // Number of primitives in geometry
             GLuint material_; // Reference to shader program
+			GLuint texture_; //Reference to texture resource
  
             // Hierarchy
             SceneNode *parent_;

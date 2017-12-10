@@ -3,23 +3,23 @@
 #include <glm/gtx/intersect.hpp>
 
 #include "scene_graph.h"
-#include "ProjectileManager.h"
+#include "PlayerProjectileManager.h"
 
 namespace game {
 
-	ProjectileManager::ProjectileManager() {
+	PlayerProjectileManager::PlayerProjectileManager() {
 	}
 
 
-	ProjectileManager::~ProjectileManager() {
+	PlayerProjectileManager::~PlayerProjectileManager() {
 	}
 
-	void ProjectileManager::setScene(SceneGraph *sceneGraph) {
+	void PlayerProjectileManager::setScene(SceneGraph *sceneGraph) {
 
 		scene = sceneGraph;
 	}
 
-	void ProjectileManager::update() {
+	void PlayerProjectileManager::update() {
 
 		for (std::vector<Projectile*>::iterator projectile = projectiles.begin(); projectile != projectiles.end();) {
 
@@ -54,19 +54,19 @@ namespace game {
 		}
 	}
 
-	bool ProjectileManager::sphereCollision(SceneNode *projectile, SceneNode *collideable) {
+	bool PlayerProjectileManager::sphereCollision(SceneNode *projectile, SceneNode *collideable) {
 		return glm::distance(projectile->GetPosition(), collideable->GetPosition()) < (projectile->getBoundingSphereRadius() + collideable->getBoundingSphereRadius());
 	}
 
-	void ProjectileManager::spawnMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation) {
+	void PlayerProjectileManager::spawnMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation) {
 		Missile *newMissile;
-		newMissile = new Missile(position, initialForward);
+		newMissile = new Missile("PlayerMaterial", position, initialForward);
 		scene->addNode(newMissile);
 		newMissile->SetOrientation(orientation);
 		projectiles.push_back(newMissile);
 	}
 
-	void ProjectileManager::spawnBomb(glm::vec3 position) {
+	void PlayerProjectileManager::spawnBomb(glm::vec3 position) {
 		Bomb *newBomb;
 		newBomb = new Bomb(position);
 		scene->addNode(newBomb);
@@ -74,19 +74,19 @@ namespace game {
 	}
 
 
-	void ProjectileManager::addCollideable(SceneNode *collideable) {
+	void PlayerProjectileManager::addCollideable(SceneNode *collideable) {
 		collideables.push_back(collideable);
 	}
 
-	void ProjectileManager::setLaserStart(glm::vec3 point) {
+	void PlayerProjectileManager::setLaserStart(glm::vec3 point) {
 		laserStart = point;
 	}
 
-	void ProjectileManager::setLaserEnd(glm::vec3 point) {
+	void PlayerProjectileManager::setLaserEnd(glm::vec3 point) {
 		laserEnd = point;
 	}
 
-	void ProjectileManager::setLaserOn(bool on) {
+	void PlayerProjectileManager::setLaserOn(bool on) {
 		laserOn = on;
 	}
 

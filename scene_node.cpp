@@ -23,7 +23,7 @@ SceneNode::SceneNode(const std::string name) {
 	parent_ = NULL;
 }
 
-SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name){
+SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name){
 
 	// Get resources
 	Resource *geom;
@@ -46,6 +46,17 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
 	}
 	else {
 		mat = NULL;
+	}
+
+	Resource *tex;
+	if (texture_name != std::string("")) {
+		tex = ResourceManager::theResourceManager().GetResource(texture_name);
+		if (!tex) {
+			throw(GameException(std::string("Could not find resource \"") + texture_name + std::string("\"")));
+		}
+	}
+	else {
+		tex = NULL;
 	}
 
     // Set name of scene node
@@ -78,6 +89,14 @@ SceneNode::SceneNode(const std::string name, std::string object_name, std::strin
     } else {
         material_ = 0;
     }
+
+	// Set texture
+	if (tex) {
+		texture_ = tex->GetResource();
+	}
+	else {
+		texture_ = 0;
+	}
 
     // Other attributes
     scale_ = glm::vec3(1.0, 1.0, 1.0);
@@ -226,6 +245,10 @@ void SceneNode::Update(void){
     // Do nothing for this generic type of scene node
 }
 
+void SceneNode::Update(glm::vec3) {
+
+}
+
 
 glm::mat4 SceneNode::SetupShader(GLuint program, glm::mat4 parent_transf){
 
@@ -255,6 +278,25 @@ glm::mat4 SceneNode::SetupShader(GLuint program, glm::mat4 parent_transf){
 
     GLint world_mat = glGetUniformLocation(program, "world_mat");
     glUniformMatrix4fv(world_mat, 1, GL_FALSE, glm::value_ptr(local_transf));
+
+	// Normal matrix
+	glm::mat4 normal_matrix = glm::transpose(glm::inverse(transf));
+	GLint normal_mat = glGetUniformLocation(program, "normal_mat");
+	glUniformMatrix4fv(normal_mat, 1, GL_FALSE, glm::value_ptr(normal_matrix));
+
+	// Texture
+	if (texture_) {
+		GLint tex = glGetUniformLocation(program, "texture_map");
+		glUniform1i(tex, 0); // Assign the first texture to the map
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture_); // First texture we bind
+												// Define texture interpolation
+		glGenerateMipmap(GL_TEXTURE_2D);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
 
     // Timer
     GLint timer_var = glGetUniformLocation(program, "timer");

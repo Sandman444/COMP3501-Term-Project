@@ -6,7 +6,7 @@
 namespace game {
 
 	Bomb::Bomb(glm::vec3 position) : Projectile(position, glm::vec3(0, -1, 0)) {
-		projectileModel = new SceneNode(GetName() + "Model", "SphereMesh", "ObjectMaterial");
+		projectileModel = new SceneNode(GetName() + "Model", "SphereMesh", "PlayerMaterial", "");
 		projectileModel->SetScale(glm::vec3(0.2, 0.2, 0.2));
 		this->addChild(projectileModel);
 

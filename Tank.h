@@ -2,6 +2,7 @@
 #define TANK_H
 
 #include "DirectionalSceneNode.h"
+#include "EnemyProjectileManager.h"
 
 namespace game {
 
@@ -9,12 +10,12 @@ namespace game {
 
 	public:
 		// Constructor
-		Tank();
+		Tank(EnemyProjectileManager *manager);
 
 		// Destructor
 		~Tank();
 
-		void Update(void) override;
+		void Update(glm::vec3 playerPosition) override;
 
 		/*void moveLeft();
 		void moveRight();
@@ -23,9 +24,12 @@ namespace game {
 		void turnLeft();
 		void turnRight();
 
+		float getLevel();
 		float getBoundingSphereRadius(void) const override;
 
 	private:
+
+		EnemyProjectileManager *projectileManager;
 		SceneNode *tank_body, *gun_turret, *gun_barrel, *tread1, *tread2;
 
 		glm::vec3 velocity;
@@ -35,6 +39,9 @@ namespace game {
 		float turnVelocity = 0;
 		int turnDirection = 0;
 		float turnSpeed;
+
+		double lastMissileFire = 0;
+		double missileFireInterval = 0.5;
 	};
 
 } // namespace game
