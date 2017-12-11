@@ -11,7 +11,7 @@ namespace game {
 		this->addChild(projectileModel);
 
 		explosionEffect = new SceneNode(GetName() + "ExplosionEffect", "SphereParticles", "ExplosionMaterial", "Sparkle");
-		projectileModel->addChild(explosionEffect);
+		explosionEffect->SetBlending(true);
 
 		speed = 0.01;
 	}
@@ -37,7 +37,7 @@ namespace game {
 		}
 		else if (!doneExploding) {
 			exploding = true;
-			//projectileModel->addChild(explosionEffect);
+			projectileModel->addChild(explosionEffect);
 			explosionTimer = glfwGetTime();
 		}
 	}
