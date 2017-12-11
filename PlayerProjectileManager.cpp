@@ -3,6 +3,7 @@
 #include <glm/gtx/intersect.hpp>
 
 #include "scene_graph.h"
+#include "EnemyManager.h"
 #include "PlayerProjectileManager.h"
 
 namespace game {
@@ -19,16 +20,26 @@ namespace game {
 		scene = sceneGraph;
 	}
 
+	void PlayerProjectileManager::setEnemyManager(EnemyManager *manager) {
+		
+		enemyManager = manager;
+	}
+
 	void PlayerProjectileManager::update() {
 
 		for (std::vector<Projectile*>::iterator projectile = projectiles.begin(); projectile != projectiles.end();) {
 
 			bool collisionDetected = false;
 
-			for (std::vector<SceneNode*>::iterator collideable = collideables.begin(); collideable != collideables.end(); ++collideable) {
+			for (std::vector<SceneNode*>::iterator collideable = collideables.begin(); collideable != collideables.end();) {
 				if (sphereCollision(*projectile, *collideable)) {
 					collisionDetected = true;
+					enemyManager->destroy(*collideable);
+					collideable = collideables.erase(collideable);
 					break;
+				}
+				else {
+					++collideable;
 				}
 			}
 

@@ -97,6 +97,9 @@ namespace game {
             SceneNode *parent_;
             std::vector<SceneNode *> children_;
 
+			static int nodeId;
+			std::string computeNodeId();
+
             // Set matrices that transform the node in a shader program
             // Return transformation of current node combined with
             // parent transformation, without including scaling

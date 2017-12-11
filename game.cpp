@@ -46,6 +46,7 @@ void Game::Init(void){
 	helicopterProjectileManager.setScene(&scene_);
 	enemyManager.setScene(&scene_);
 	enemyManager.setPlayerManager(&helicopterProjectileManager);
+	helicopterProjectileManager.setEnemyManager(&enemyManager);
 
 	// Add updateables
 	updateables.push_back((Updateable*)&scene_);
