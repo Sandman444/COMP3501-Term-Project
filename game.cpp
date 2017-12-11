@@ -152,12 +152,18 @@ void Game::SetupResources(void){
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/fire");
 	ResourceManager::theResourceManager().LoadResource(Material, "FireMaterial", filename.c_str());
 
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/sparkle");
+	ResourceManager::theResourceManager().LoadResource(Material, "ExplosionMaterial", filename.c_str());
+
 	// Load ground texture
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground.jpg");
 	ResourceManager::theResourceManager().LoadResource(Texture, "TronGrid", filename.c_str());
 
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/flame4x4orig.png");
 	ResourceManager::theResourceManager().LoadResource(Texture, "Flame", filename.c_str());
+
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/sparkle.png");
+	ResourceManager::theResourceManager().LoadResource(Texture, "Sparkle", filename.c_str());
 }
 
 

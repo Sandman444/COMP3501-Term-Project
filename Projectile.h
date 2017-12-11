@@ -24,7 +24,7 @@ namespace game {
 
 		void SetPosition(glm::vec3 position);
 		float getBoundingSphereRadius(void) const override;
-		bool isOutOfRange();
+		virtual bool isOutOfRange();
 
 		SceneNode *projectileModel;
 

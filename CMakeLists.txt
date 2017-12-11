@@ -9,7 +9,7 @@ set(HDRS
 )
  
 set(SRCS
-    camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp Projectile.cpp PlayerProjectileManager.cpp EnemyProjectileManager.cpp Tank.cpp Turret.cpp Bomb.cpp Missile.cpp Laser.cpp Ground.cpp EnemyManager.cpp EnemyHelicopter.cpp shader_attribute.cpp material_vp.glsl material_fp.glsl enemy_fp.glsl enemy_vp.glsl laser_fp.glsl laser_gp.glsl laser_vp.glsl ground_material_fp.glsl ground_material_vp.glsl player_fp.glsl player_vp.glsl 
+    camera.cpp game.cpp main.cpp resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp InputController.cpp Helicopter.cpp DirectionalSceneNode.cpp Projectile.cpp PlayerProjectileManager.cpp EnemyProjectileManager.cpp Tank.cpp Turret.cpp Bomb.cpp Missile.cpp Laser.cpp Ground.cpp EnemyManager.cpp EnemyHelicopter.cpp shader_attribute.cpp material_vp.glsl material_fp.glsl enemy_fp.glsl enemy_vp.glsl laser_fp.glsl laser_gp.glsl laser_vp.glsl ground_material_fp.glsl ground_material_vp.glsl player_fp.glsl player_vp.glsl fire_fp.glsl fire_vp.glsl fire_gp.glsl sparkle_vp.glsl sparkle_fp.glsl sparkle_gp.glsl
 )
 
 # Add path name to configuration file
