@@ -23,7 +23,7 @@ SceneNode::SceneNode(const std::string name) {
 	parent_ = NULL;
 }
 
-SceneNode::SceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name){
+SceneNode::SceneNode(const std::string name, const std::string object_name, const std::string material_name, const std::string texture_name){
 
 	// Get resources
 	Resource *geom;
@@ -140,6 +140,11 @@ glm::vec3 SceneNode::GetScale(void) const {
     return scale_;
 }
 
+bool SceneNode::GetBlending(void) const {
+
+	return blending_;
+}
+
 
 void SceneNode::SetPosition(glm::vec3 position){
 
@@ -156,6 +161,11 @@ void SceneNode::SetOrientation(glm::quat orientation){
 void SceneNode::SetScale(glm::vec3 scale){
 
     scale_ = scale;
+}
+
+void SceneNode::SetBlending(bool blending) {
+
+	blending_ = blending;
 }
 
 
@@ -210,6 +220,25 @@ GLuint SceneNode::GetMaterial(void) const {
 glm::mat4 SceneNode::Draw(Camera *camera, glm::mat4 parent_transf){
 
     if ((array_buffer_ > 0) && (material_ > 0)){
+
+		// Select blending or not
+		if (blending_) {
+			// Disable z-buffer
+			glDisable(GL_DEPTH_TEST);
+
+			// Enable blending
+			glEnable(GL_BLEND);
+			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Simpler form
+			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
+		}
+		else {
+			// Enable z-buffer
+			glEnable(GL_DEPTH_TEST);
+			glDisable(GL_BLEND);
+			glDepthFunc(GL_LESS);
+		}
+
         // Select proper material (shader program)
         glUseProgram(material_);
 

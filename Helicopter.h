@@ -12,7 +12,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Helicopter(std::string, PlayerProjectileManager *manager);
+		Helicopter(std::string name, std::string material, PlayerProjectileManager *manager);
 
 		// Destructor
 		~Helicopter();
@@ -40,6 +40,7 @@ namespace game {
 		SceneNode *body, *cockpit, *rotorbladeJoint, *rotorBlade, *tail, *tailBlade;
 
 		Laser laser;
+		SceneNode *laserEffect;
 
 		glm::vec3 velocity;
 		glm::vec3 accelerationDirection;

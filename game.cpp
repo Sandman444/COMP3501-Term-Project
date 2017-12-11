@@ -128,6 +128,7 @@ void Game::SetupResources(void){
 	ResourceManager::theResourceManager().CreateWall("WallMesh");
 	ResourceManager::theResourceManager().CreateSphereParticles("SphereParticles");
 	ResourceManager::theResourceManager().CreateTorusParticles("TorusParticles");
+	ResourceManager::theResourceManager().CreateConeParticles("ConeParticles");
 
 
 	std::string filename;
@@ -148,9 +149,15 @@ void Game::SetupResources(void){
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/laser");
 	ResourceManager::theResourceManager().LoadResource(Material, "LaserMaterial", filename.c_str());
 
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/fire");
+	ResourceManager::theResourceManager().LoadResource(Material, "FireMaterial", filename.c_str());
+
 	// Load ground texture
 	filename = std::string(MATERIAL_DIRECTORY) + std::string("/ground.jpg");
 	ResourceManager::theResourceManager().LoadResource(Texture, "TronGrid", filename.c_str());
+
+	filename = std::string(MATERIAL_DIRECTORY) + std::string("/flame4x4orig.png");
+	ResourceManager::theResourceManager().LoadResource(Texture, "Flame", filename.c_str());
 }
 
 
@@ -162,7 +169,7 @@ void Game::SetupScene(void){
 	ground = new Ground("WallMesh", "GroundMaterial", "TronGrid");
 	scene_.addNode(ground);
 
-	helicopter = new Helicopter("PlayerMaterial", &helicopterProjectileManager);
+	helicopter = new Helicopter("Player", "PlayerMaterial", &helicopterProjectileManager);
 	helicopter->SetPosition(glm::vec3(0.0, 3.0, 0.0));
 	inputController.control(helicopter);
 	camera_.follow(helicopter);
@@ -180,7 +187,7 @@ void Game::SetupScene(void){
 	enemyManager.spawnTurret(glm::vec2(-4.0, 1.5));
 	enemyManager.spawnTurret(glm::vec2(0.5, -0.5));
 
-	Helicopter *otherCopter = new Helicopter("EnemyMaterial", &helicopterProjectileManager);
+	Helicopter *otherCopter = new Helicopter("Enemy", "EnemyMaterial", &helicopterProjectileManager);
 	scene_.addNode(otherCopter);
 	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
 

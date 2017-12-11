@@ -8,7 +8,7 @@
 
 namespace game {
 
-	EnemyHelicopter::EnemyHelicopter() : Helicopter("EnemyMaterial", NULL) {
+	EnemyHelicopter::EnemyHelicopter() : Helicopter("Enemy", "EnemyMaterial", NULL) {
 
 	}
 

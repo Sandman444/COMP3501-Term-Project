@@ -8,7 +8,7 @@
 
 namespace game {
 
-	Helicopter::Helicopter(std::string material, PlayerProjectileManager *manager) : DirectionalSceneNode("helicopter", "", "", "") {
+	Helicopter::Helicopter(std::string name, std::string material, PlayerProjectileManager *manager) : DirectionalSceneNode(name, "", "", "") {
 
 		projectileManager = manager;
 
@@ -57,6 +57,14 @@ namespace game {
 		tailBlade->SetPosition(glm::vec3(0, -tailScale.y / 2.0 + tailScale.y / 10.0, tailScale.z / 2.0 + tailBladeScale.z / 2.0));
 		tail->addChild(tailBlade);
 
+		// Set up laser effect
+		laserEffect = new SceneNode(GetName() + "LaserEffect", "TorusParticles", "LaserMaterial", "Flame");
+		laserEffect->SetBlending(true);
+		laserEffect->SetPosition(glm::vec3(-bodyScale.x / 2.0 - 0.15, -0.02, 0));
+		laserEffect->SetScale(glm::vec3(0.1, 0.1, 0.1));
+		laserEffect->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0, -1, 0)));
+		body->addChild(laserEffect);
+
 		// Set initial forward and side vectors
 		forward_ = glm::vec3(-1, 0, 0);
 		side_ = glm::vec3(0, 0, 1);
@@ -73,7 +81,7 @@ namespace game {
 
 
 	Helicopter::~Helicopter() {
-		delete body, cockpit, rotorbladeJoint, rotorBlade, tail, tailBlade;
+		delete body, cockpit, rotorbladeJoint, rotorBlade, tail, tailBlade, laserEffect;
 	}
 
 	void Helicopter::moveUp() {

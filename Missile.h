@@ -18,6 +18,7 @@ namespace game {
 
 	private:
 
+		SceneNode *rocketParticles;
 	};
 
 } // namespace game

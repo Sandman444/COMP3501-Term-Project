@@ -25,7 +25,7 @@ namespace game {
         public:
             // Create scene node from given resources
 			SceneNode(const std::string name);
-            SceneNode(const std::string name, std::string object_name, std::string material_name, std::string texture_name);
+            SceneNode(const std::string name, const std::string object_name, const std::string material_name, const std::string texture_name = NULL);
 
             // Destructor
             ~SceneNode();
@@ -37,6 +37,7 @@ namespace game {
             glm::vec3 GetPosition(void) const;
             glm::quat GetOrientation(void) const;
             glm::vec3 GetScale(void) const;
+			bool GetBlending(void) const;
 			virtual float getBoundingSphereRadius(void) const;
 
 
@@ -44,6 +45,7 @@ namespace game {
             void SetPosition(glm::vec3 position);
             void SetOrientation(glm::quat orientation);
             void SetScale(glm::vec3 scale);
+			void SetBlending(bool blending);
             
             // Perform transformations on node
             void Translate(glm::vec3 trans);
@@ -89,6 +91,7 @@ namespace game {
             GLsizei size_; // Number of primitives in geometry
             GLuint material_; // Reference to shader program
 			GLuint texture_; //Reference to texture resource
+			bool blending_ = false; // Draw with blending or not
  
             // Hierarchy
             SceneNode *parent_;
