@@ -27,8 +27,8 @@ namespace game {
 		side_ = glm::vec3(0, 0, 1);
 
 		// Set up gun
-		gun_turret->setForward(this->getForward());
-		gun_turret->setSide(this->getSide());
+		gun_turret->setForward(forward_);
+		gun_turret->setSide(side_);
 		gun_turret->SetScale(glm::vec3(tankBodyScale.x / 1.5, tankBodyScale.y * 3, tankBodyScale.z / 1.5));
 		glm::vec3 gunScale = gun_turret->GetScale();
 		gun_turret->SetPosition(glm::vec3(0, tankBodyScale.y* 1.5, 0));
@@ -37,7 +37,7 @@ namespace game {
 		// Set up barrel
 		gun_barrel->SetScale(glm::vec3(gunScale.x / 3, gunScale.y * 2.0, gunScale.z / 3));
 		glm::vec3 barrelScale = gun_barrel->GetScale();
-		gun_barrel->SetPosition(glm::vec3(gunScale.x / 3, gunScale.y / 5, 0.0));
+		gun_barrel->SetPosition(glm::vec3(-gunScale.x / 3, gunScale.y / 5, 0.0));
 		gun_barrel->SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(0, 0, 1.0)));
 		gun_turret->addChild(gun_barrel);
 
@@ -84,36 +84,20 @@ namespace game {
 	}
 
 	void Tank::Update(glm::vec3 playerPosition) {
-		//find position of player and self
-		glm::vec2 playerPos = glm::vec2(playerPosition.x, playerPosition.z);
-		glm::vec2 currentPos = glm::vec2(GetPosition().x, GetPosition().z);
 
-		//find vector between self and player then normalize
-		glm::vec2 newDirection = glm::vec2(0, 0);
-		newDirection = currentPos - playerPos;
-		newDirection = glm::normalize(newDirection);
-		glm::vec2 forward = glm::vec2(getForward().x, getForward().z);
-		forward = glm::normalize(forward);
-		float theta = 0;
-		if (newDirection.x != NULL) {
-			theta = acos(glm::dot(newDirection, forward) / (glm::length(newDirection) * glm::length(newDirection)));
-		}
+		glm::vec3 toPlayer = glm::normalize(playerPosition - GetPosition());
+		gun_turret->yaw(glm::dot(gun_turret->getSide(), toPlayer) * 0.1f);
+		gun_turret->pitch(-glm::dot(gun_turret->getUp(), toPlayer) * 0.1f);
 
-		//change the orientation of the turret
-		if (newDirection.y < 0) {
-			gun_turret->SetOrientation(glm::angleAxis(-theta, glm::vec3(0.0, 1.0, 0.0)));
+		if (glm::distance(GetPosition(), playerPosition) > 10.0) {
+			Translate(glm::vec3(toPlayer.x, 0, toPlayer.z) * 0.01f);
 		}
-		else {
-			gun_turret->SetOrientation(glm::angleAxis(theta, glm::vec3(0.0, 1.0, 0.0)));
-		}
-
-		this->Translate(velocity);
 
 		double currentTime = glfwGetTime();
 		if (currentTime - lastMissileFire > missileFireInterval) {
 			lastMissileFire = currentTime;
 
-			projectileManager->spawnSplineMissile(GetPosition(), -(gun_turret->getForward()), -gun_turret->GetOrientation(), playerPosition);
+			projectileManager->spawnMissile(GetPosition(), gun_turret->getForward(), gun_turret->GetOrientation());
 		}
 	}
 

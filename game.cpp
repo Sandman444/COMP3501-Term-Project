@@ -194,11 +194,7 @@ void Game::SetupScene(void){
 	enemyManager.spawnTurret(glm::vec2(-4.0, 1.5));
 	enemyManager.spawnTurret(glm::vec2(0.5, -0.5));
 
-	Helicopter *otherCopter = new Helicopter("Enemy", "EnemyMaterial", &helicopterProjectileManager);
-	scene_.addNode(otherCopter);
-	otherCopter->SetPosition(helicopter->GetPosition() + helicopter->getForward());
-
-	helicopterProjectileManager.addCollideable(otherCopter);
+	enemyManager.spawnHeli(glm::vec3(-10, 3.2, 2.0));
 }
 
 

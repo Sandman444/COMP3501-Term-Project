@@ -53,7 +53,11 @@ namespace game {
 	}
 
 	void EnemyManager::spawnHeli(glm::vec3 position) {
-		//Helicopter *newHelicopter = new Helicopter();
+		EnemyHelicopter *newHelicopter = new EnemyHelicopter(&enemyProjectileManager);
+		newHelicopter->SetPosition(position);
+		scene->addNode(newHelicopter);
+		enemies.push_back(newHelicopter);
+		playerManager->addCollideable(newHelicopter);
 	}
 
 	void EnemyManager::destroy(SceneNode *deadEnemy) {

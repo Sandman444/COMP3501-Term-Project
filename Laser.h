@@ -26,7 +26,7 @@ namespace game {
 
 		SceneNode *laserEffect;
 
-		bool firing;
+		bool firing = false;
 	};
 
 } // namespace game

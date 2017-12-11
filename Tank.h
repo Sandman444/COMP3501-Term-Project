@@ -42,7 +42,7 @@ namespace game {
 		float turnSpeed;
 
 		double lastMissileFire = 0;
-		double missileFireInterval = 0.5;
+		double missileFireInterval = 2.5;
 	};
 
 } // namespace game

@@ -50,7 +50,7 @@ namespace game {
 			//Create Wall
 			void CreateWall(std::string object_name);
 			//Create sphere of particles
-			void CreateSphereParticles(std::string object_name, int num_particles = 200);
+			void CreateSphereParticles(std::string object_name, int num_particles = 700);
 			//Create torus of particles
 			void CreateTorusParticles(std::string object_name, int num_particles = 700, float loop_radius = 0.6, float circle_radius = 0.2);
 			void CreateConeParticles(std::string object_name, int num_particles = 600, float loop_radius = 0.6, float circle_radius = 0.2);

@@ -24,8 +24,8 @@ namespace game {
 		void update();
 		void setScene(SceneGraph *sceneGraph);
 		bool sphereCollision(SceneNode *projectile, SceneNode *collideable);
+		void addCollideable(SceneNode *collideable);
 		void spawnMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation);
-		void addCollideable(SceneNode *collideable); 
 		void spawnSplineMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation, glm::vec3 playerPos);
 
 	private:

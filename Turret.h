@@ -26,7 +26,8 @@ namespace game {
 	private:
 
 		EnemyProjectileManager *projectileManager;
-		SceneNode *body, *gun_housing, *barrel;
+		SceneNode *body;
+		DirectionalSceneNode *gun_housing, *barrel;
 
 		glm::vec3 velocity;
 		glm::vec3 accelerationDirection;
@@ -35,6 +36,9 @@ namespace game {
 		float turnVelocity = 0;
 		int turnDirection = 0;
 		float turnSpeed;
+
+		double lastMissileFire = 0;
+		double missileFireInterval = 2.5;
 	};
 
 } // namespace game

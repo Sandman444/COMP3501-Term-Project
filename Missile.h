@@ -13,9 +13,6 @@ namespace game {
 		// Destructor
 		~Missile();
 
-		Projectile* converToMissile(Projectile *projectile);
-		void move();
-
 	private:
 
 		SceneNode *rocketParticles;

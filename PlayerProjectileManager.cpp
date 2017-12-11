@@ -58,9 +58,13 @@ namespace game {
 			}
 		}
 
-		for (std::vector<SceneNode*>::iterator collideable = collideables.begin(); collideable != collideables.end(); ++collideable) {
+		for (std::vector<SceneNode*>::iterator collideable = collideables.begin(); collideable != collideables.end();) {
 			if (laserOn && glm::intersectLineSphere(laserStart, laserEnd, (*collideable)->GetPosition(), (*collideable)->getBoundingSphereRadius(), glm::vec3(1.0), glm::vec3(1.0))) {
-				std::cout << "coll" << std::endl;
+				enemyManager->destroy(*collideable);
+				collideable = collideables.erase(collideable);
+			}
+			else {
+				++collideable;
 			}
 		}
 	}

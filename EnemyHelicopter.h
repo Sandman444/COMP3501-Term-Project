@@ -2,6 +2,7 @@
 #define ENEMYHELICOPTER_H
 
 #include "Helicopter.h"
+#include "EnemyProjectileManager.h"
 
 namespace game {
 
@@ -9,39 +10,17 @@ namespace game {
 
 	public:
 		// Constructor
-		EnemyHelicopter(void);
+		EnemyHelicopter(EnemyProjectileManager *manager);
 
 		// Destructor
 		~EnemyHelicopter();
 
+		void Update(void) override;
 		void Update(glm::vec3 playerPosition) override;
-
-		void moveUp();
-		void moveDown();
-		void moveLeft();
-		void moveRight();
-		void moveForward();
-		void moveBackward();
-		void turnLeft();
-		void turnRight();
 
 	private:
 
-		glm::vec3 velocity;
-		glm::vec3 accelerationDirection;
-		float accelerationSpeed;
-
-		glm::vec2 tiltDirection;
-		glm::vec2 tiltVelocity;
-		float tiltSpeed;
-
-		float turnVelocity = 0;
-		int turnDirection = 0;
-		float turnSpeed;
-
-		float tiltFriction;
-		float airFriction;
-		float levelingForce;
+		EnemyProjectileManager *projectileManager;
 	};
 
 } // namespace game

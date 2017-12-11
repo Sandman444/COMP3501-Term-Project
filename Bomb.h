@@ -25,7 +25,7 @@ namespace game {
 		bool exploding = false;
 		bool doneExploding = false;
 		double explosionTimer = 0;
-		double explosionDuration = 2.0;
+		double explosionDuration = 1.5;
 
 		float gravity = 0.0005;
 		float velocity = 0.001;

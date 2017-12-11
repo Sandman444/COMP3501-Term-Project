@@ -8,8 +8,12 @@
 
 namespace game {
 
-	EnemyHelicopter::EnemyHelicopter() : Helicopter("Enemy", "EnemyMaterial", NULL) {
+	EnemyHelicopter::EnemyHelicopter(EnemyProjectileManager *manager) : Helicopter("EnemyHelicopter", "EnemyMaterial", NULL) {
 
+		projectileManager = manager;
+
+		accelerationSpeed = 0.0005f;
+		airFriction = 0.025f;
 	}
 
 
@@ -20,8 +24,30 @@ namespace game {
 
 	void EnemyHelicopter::Update(glm::vec3 playerPosition) {
 
+		glm::vec3 toPlayer = glm::normalize(playerPosition - GetPosition());
+		if (toPlayer.y > 0) {
+			Helicopter::moveUp();
+		}
+		else {
+			Helicopter::moveDown();
+		}
+
+		if (toPlayer.z < 0) {
+			Helicopter::moveRight();
+		}
+		else {
+			Helicopter::moveLeft();
+		}
+
+		if (toPlayer.x < 0) {
+			Helicopter::moveForward();
+		}
+		else {
+			Helicopter::moveBackward();
+		}
+
 		// Up down left right acceleration
-		/*glm::vec3 finalAcceleration;
+		glm::vec3 finalAcceleration;
 		if (glm::length(accelerationDirection) > 0) {
 			finalAcceleration = glm::normalize(accelerationDirection) * accelerationSpeed;
 		}
@@ -69,12 +95,10 @@ namespace game {
 		float rot_factor(glm::pi<float>() / 10);
 		rotorBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(1, 0, 0)));
 		tailBlade->Rotate(glm::angleAxis(rot_factor, glm::vec3(0, 0, 1)));
+	}
 
-		// Update laser
-		projectileManager->setLaserStart(GetPosition());
-		projectileManager->setLaserEnd(getForward() * laser.getLength());
-		laser.off();
-		projectileManager->setLaserOn(laser.isOn());*/
+	void EnemyHelicopter::Update(void) {
+
 	}
 
 

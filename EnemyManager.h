@@ -8,6 +8,7 @@
 #include "PlayerProjectileManager.h"
 #include "Tank.h"
 #include "Turret.h"
+#include "EnemyHelicopter.h"
 
 namespace game {
 

@@ -33,10 +33,9 @@ namespace game {
 
 		float getBoundingSphereRadius(void) const override;
 
-	private:
+	protected:
 
 		PlayerProjectileManager *projectileManager;
-
 		SceneNode *body, *cockpit, *rotorbladeJoint, *rotorBlade, *tail, *tailBlade;
 
 		Laser *laser;
@@ -62,6 +61,7 @@ namespace game {
 
 		double lastBombDrop = 0;
 		double bombDropInterval = 0.5;
+
 	};
 
 } // namespace game
