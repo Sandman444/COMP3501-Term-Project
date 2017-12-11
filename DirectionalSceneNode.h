@@ -21,6 +21,8 @@ namespace game {
 		glm::vec3 getSide(void) const;
 		glm::vec3 getUp(void) const;
 
+		void setForward(glm::vec3 forward_);
+		void setSide(glm::vec3 side_);
 		// Perform relative transformations of node
 		void pitch(float angle);
 		void yaw(float angle);

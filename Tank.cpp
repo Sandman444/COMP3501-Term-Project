@@ -13,7 +13,7 @@ namespace game {
 		projectileManager = manager;
 
 		tank_body = new SceneNode("tank_body", "CubeMesh", "EnemyMaterial", "");
-		gun_turret = new SceneNode("tank_turret", "CubeMesh", "EnemyMaterial", "");
+		gun_turret = new DirectionalSceneNode("tank_turret", "CubeMesh", "EnemyMaterial", "");
 		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "EnemyMaterial", "");
 		tread1 = new SceneNode("tank_tread1", "CubeMesh", "EnemyMaterial", "");
 		tread2 = new SceneNode("tank_tread2", "CubeMesh", "EnemyMaterial", "");
@@ -27,6 +27,8 @@ namespace game {
 		side_ = glm::vec3(0, 0, 1);
 
 		// Set up gun
+		gun_turret->setForward(this->getForward());
+		gun_turret->setSide(this->getSide());
 		gun_turret->SetScale(glm::vec3(tankBodyScale.x / 1.5, tankBodyScale.y * 3, tankBodyScale.z / 1.5));
 		glm::vec3 gunScale = gun_turret->GetScale();
 		gun_turret->SetPosition(glm::vec3(0, tankBodyScale.y* 1.5, 0));
@@ -110,7 +112,8 @@ namespace game {
 		double currentTime = glfwGetTime();
 		if (currentTime - lastMissileFire > missileFireInterval) {
 			lastMissileFire = currentTime;
-			projectileManager->spawnMissile(GetPosition(), getForward(), GetOrientation());
+
+			projectileManager->spawnMissile(GetPosition(), -(gun_turret->getForward()), -gun_turret->GetOrientation());
 		}
 	}
 

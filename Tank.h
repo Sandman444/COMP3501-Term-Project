@@ -30,7 +30,8 @@ namespace game {
 	private:
 
 		EnemyProjectileManager *projectileManager;
-		SceneNode *tank_body, *gun_turret, *gun_barrel, *tread1, *tread2;
+		SceneNode *tank_body, *gun_barrel, *tread1, *tread2;
+		DirectionalSceneNode *gun_turret;
 
 		glm::vec3 velocity;
 		glm::vec3 accelerationDirection;
