@@ -56,4 +56,14 @@ namespace game {
 		//Helicopter *newHelicopter = new Helicopter();
 	}
 
+	void EnemyManager::destroy(SceneNode *deadEnemy) {
+		for (std::vector<SceneNode*>::iterator enemy = enemies.begin(); enemy != enemies.end(); ++enemy) {
+			if ((*enemy)->GetName() == deadEnemy->GetName()) {
+				(*enemy)->getParent()->removeChild((*enemy)->GetName());
+				enemies.erase(enemy);
+				break;
+			}
+		}
+	}
+
 } // namespace game

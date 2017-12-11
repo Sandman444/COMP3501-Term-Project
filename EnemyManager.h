@@ -31,6 +31,8 @@ namespace game {
 		void spawnTurret(glm::vec2 position);
 		void spawnHeli(glm::vec3 position);
 
+		void destroy(SceneNode *enemy);
+
 		
 	private:
 

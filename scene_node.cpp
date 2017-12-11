@@ -11,10 +11,16 @@
 
 namespace game {
 
+int SceneNode::nodeId = 0;
+
+std::string SceneNode::computeNodeId() {
+	return "Node" + std::to_string(nodeId++);
+}
+
 SceneNode::SceneNode(const std::string name) {
 
 	// Set name of scene node
-	name_ = name;
+	name_ = name + computeNodeId();
 
 	// Other attributes
 	scale_ = glm::vec3(1.0, 1.0, 1.0);
@@ -60,7 +66,7 @@ SceneNode::SceneNode(const std::string name, const std::string object_name, cons
 	}
 
     // Set name of scene node
-    name_ = name;
+    name_ = name + computeNodeId();
 
     if (geom){
         // Set geometry

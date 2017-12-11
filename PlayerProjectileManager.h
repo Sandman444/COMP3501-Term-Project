@@ -11,6 +11,7 @@
 namespace game {
 
 	class SceneGraph;
+	class EnemyManager;
 
 	class PlayerProjectileManager : public Updateable {
 
@@ -23,6 +24,7 @@ namespace game {
 
 		void update();
 		void setScene(SceneGraph *sceneGraph);
+		void setEnemyManager(EnemyManager *manager);
 		bool sphereCollision(SceneNode *projectile, SceneNode *collideable);
 		void spawnMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation);
 		void spawnBomb(glm::vec3 position);
@@ -35,7 +37,8 @@ namespace game {
 	private:
 
 		SceneGraph *scene;
-		
+		EnemyManager *enemyManager;
+
 		std::vector<SceneNode*> collideables;
 		std::vector<Projectile*> projectiles;
 
