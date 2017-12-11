@@ -25,7 +25,8 @@ namespace game {
 		this->addChild(body);
 
 		// Attach laser
-		body->addChild(&laser);
+		laser = new Laser(name);
+		body->addChild(laser);
 
 		// Set up cockpit
 		cockpit->SetScale(glm::vec3(bodyScale.y / 2.0, bodyScale.y / 2.0, bodyScale.z));
@@ -57,14 +58,6 @@ namespace game {
 		tailBlade->SetPosition(glm::vec3(0, -tailScale.y / 2.0 + tailScale.y / 10.0, tailScale.z / 2.0 + tailBladeScale.z / 2.0));
 		tail->addChild(tailBlade);
 
-		// Set up laser effect
-		laserEffect = new SceneNode(GetName() + "LaserEffect", "TorusParticles", "LaserMaterial", "Flame");
-		laserEffect->SetBlending(true);
-		laserEffect->SetPosition(glm::vec3(-bodyScale.x / 2.0 - 0.15, -0.02, 0));
-		laserEffect->SetScale(glm::vec3(0.1, 0.1, 0.1));
-		laserEffect->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0, -1, 0)));
-		body->addChild(laserEffect);
-
 		// Set initial forward and side vectors
 		forward_ = glm::vec3(-1, 0, 0);
 		side_ = glm::vec3(0, 0, 1);
@@ -81,7 +74,7 @@ namespace game {
 
 
 	Helicopter::~Helicopter() {
-		delete body, cockpit, rotorbladeJoint, rotorBlade, tail, tailBlade, laserEffect;
+		delete body, cockpit, rotorbladeJoint, rotorBlade, tail, tailBlade, laser;
 	}
 
 	void Helicopter::moveUp() {
@@ -137,8 +130,8 @@ namespace game {
 	}
 
 	void Helicopter::fireLaser() {
-		laser.on();
-		projectileManager->setLaserOn(laser.isOn());
+		laser->on();
+		projectileManager->setLaserOn(laser->isOn());
 	}
 
 	void Helicopter::Update(void) {
@@ -195,9 +188,9 @@ namespace game {
 
 		// Update laser
 		projectileManager->setLaserStart(GetPosition());
-		projectileManager->setLaserEnd(getForward() * laser.getLength());
-		laser.off();
-		projectileManager->setLaserOn(laser.isOn());
+		projectileManager->setLaserEnd(getForward() * laser->getLength());
+		laser->off();
+		projectileManager->setLaserOn(laser->isOn());
 	}
 
 	float Helicopter::getBoundingSphereRadius(void) const {

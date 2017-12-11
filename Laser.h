@@ -9,7 +9,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Laser();
+		Laser(std::string name);
 
 		// Destructor
 		~Laser();
@@ -23,6 +23,8 @@ namespace game {
 		glm::mat4 Draw(Camera *camera, glm::mat4 parent_transf) override;
 
 	private:
+
+		SceneNode *laserEffect;
 
 		bool firing;
 	};

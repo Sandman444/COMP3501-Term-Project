@@ -39,8 +39,7 @@ namespace game {
 
 		SceneNode *body, *cockpit, *rotorbladeJoint, *rotorBlade, *tail, *tailBlade;
 
-		Laser laser;
-		SceneNode *laserEffect;
+		Laser *laser;
 
 		glm::vec3 velocity;
 		glm::vec3 accelerationDirection;
