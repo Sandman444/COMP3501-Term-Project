@@ -32,7 +32,6 @@ namespace game {
 		void spawnHeli(glm::vec3 position);
 
 		void destroy(SceneNode *enemy);
-
 		
 	private:
 

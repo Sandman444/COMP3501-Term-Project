@@ -25,6 +25,7 @@ namespace game {
 		void update();
 		void setScene(SceneGraph *sceneGraph);
 		void setEnemyManager(EnemyManager *manager);
+
 		bool sphereCollision(SceneNode *projectile, SceneNode *collideable);
 		void spawnMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation);
 		void spawnBomb(glm::vec3 position);

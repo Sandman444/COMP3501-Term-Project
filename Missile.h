@@ -4,7 +4,6 @@
 #include "Projectile.h"
 
 namespace game {
-
 	class Missile : public Projectile {
 
 	public:
@@ -15,6 +14,7 @@ namespace game {
 		~Missile();
 
 		Projectile* converToMissile(Projectile *projectile);
+		void move();
 
 	private:
 

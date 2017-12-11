@@ -113,7 +113,7 @@ namespace game {
 		if (currentTime - lastMissileFire > missileFireInterval) {
 			lastMissileFire = currentTime;
 
-			projectileManager->spawnMissile(GetPosition(), -(gun_turret->getForward()), -gun_turret->GetOrientation());
+			projectileManager->spawnSplineMissile(GetPosition(), -(gun_turret->getForward()), -gun_turret->GetOrientation(), playerPosition);
 		}
 	}
 

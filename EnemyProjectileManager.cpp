@@ -59,6 +59,13 @@ namespace game {
 		projectiles.push_back(newMissile);
 	}
 
+	void EnemyProjectileManager::spawnSplineMissile(glm::vec3 position, glm::vec3 initialForward, glm::quat orientation, glm::vec3 playerPos) {
+		SplineMissile *newMissile = new SplineMissile("EnemyMaterial", position, initialForward, playerPos);
+		newMissile->SetOrientation(orientation);
+		scene->addNode(newMissile);
+		projectiles.push_back(newMissile);
+	}
+
 	void EnemyProjectileManager::addCollideable(SceneNode *collideable) {
 		collideables.push_back(collideable);
 	}

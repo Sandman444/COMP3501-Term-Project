@@ -21,4 +21,5 @@ namespace game {
 	Missile::~Missile() {
 	}
 
+	void Missile::move() {  }
 } // namespace game
