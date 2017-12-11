@@ -36,6 +36,13 @@ namespace game {
 		return current_up;
 	}
 
+	void DirectionalSceneNode::setForward(glm::vec3 vector) {
+		forward_ = vector;
+	}
+
+	void DirectionalSceneNode::setSide(glm::vec3 vector) {
+		side_ = vector;
+	}
 
 	void DirectionalSceneNode::pitch(float angle) {
 

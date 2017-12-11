@@ -10,6 +10,7 @@ uniform mat4 world_mat;
 uniform mat4 view_mat;
 uniform mat4 normal_mat;
 uniform float timer;
+uniform float cycletime;
 
 // Attributes forwarded to the geometry shader
 out vec3 vertex_color;
@@ -17,7 +18,7 @@ out float timestep;
 
 // Simulation parameters (constants)
 uniform vec3 up_vec = vec3(0.0, 1.0, 0.0);
-uniform vec3 object_color = vec3(227 / 255.0, 140 / 255.0, 45 / 255.0);
+uniform vec3 object_color = vec3(0.8, 0.8, 0.8);
 float grav = 0.1; // Gravity
 float speed = 1.0; // Allows to control the speed of the explosion
 
@@ -25,7 +26,7 @@ float speed = 1.0; // Allows to control the speed of the explosion
 void main()
 {
     // Let time cycle every four seconds
-    float circtime = timer - 2.0 * floor(timer / 2);
+    float circtime = timer - cycletime * floor(timer / cycletime);
     float t = circtime; // Our time parameter
     
     // Let's first work in model space (apply only world matrix)
