@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <stack>
+#include <deque>
+#include <unordered_set>
 #define GLM_FORCE_RADIANS
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,7 +13,7 @@
 
 namespace game {
 
-SceneGraph::SceneGraph(void){
+SceneGraph::SceneGraph(){
 
     background_color_ = glm::vec3(0.0, 0.0, 0.0);
 
@@ -20,6 +22,7 @@ SceneGraph::SceneGraph(void){
 
 
 SceneGraph::~SceneGraph(){
+	//delete root_;
 }
 
 
@@ -40,7 +43,6 @@ void SceneGraph::setRoot(SceneNode* root) {
 }
 
 void SceneGraph::addNode(SceneNode* newNode) {
-
 	root_->addChild(newNode);
 }
 
@@ -73,30 +75,42 @@ void SceneGraph::Draw(Camera *camera){
                  background_color_[2], 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	std::unordered_set<std::string> names;
+
     // Draw all scene nodes
     // Initialize stack of nodes
-    std::stack<SceneNode *> stck;
-    stck.push(root_);
+    std::deque<SceneNode *> stck;
+    stck.push_back(root_);
     // Initialize stack of transformations
-    std::stack<glm::mat4> transf;
-    transf.push(glm::mat4(1.0));
+    std::deque<glm::mat4> transf;
+    transf.push_back(glm::mat4(1.0));
     // Traverse hierarchy
     while (stck.size() > 0){
         // Get next node to be processed and pop it from the stack
-        SceneNode *current = stck.top();
-        stck.pop();
+        SceneNode *current = stck.back();
+        stck.pop_back();
         // Get transformation corresponding to the parent of the next node
-        glm::mat4 parent_transf = transf.top();
-        transf.pop();
-        // Draw node based on parent transformation
-        glm::mat4 current_transf = current->Draw(camera, parent_transf);
-        // Push children of the node to the stack, along with the node's
-        // transformation
-        for (std::vector<SceneNode *>::const_iterator it = current->children_begin();
-             it != current->children_end(); it++){
-            stck.push(*it);
-            transf.push(current_transf);
-        }
+        glm::mat4 parent_transf = transf.back();
+        transf.pop_back();
+
+		std::unordered_set<std::string>::const_iterator nodeName = names.find(current->GetName());
+
+		if (current->GetBlending() && nodeName == names.end()) {
+			stck.push_front(current);
+			transf.push_front(parent_transf);
+			names.insert(current->GetName());
+		}
+		else {
+			// Draw node based on parent transformation
+			glm::mat4 current_transf = current->Draw(camera, parent_transf);
+			// Push children of the node to the stack, along with the node's
+			// transformation
+			for (std::vector<SceneNode *>::const_iterator it = current->children_begin();
+				it != current->children_end(); it++) {
+				stck.push_back(*it);
+				transf.push_back(current_transf);
+			}
+		}
     }
 }
 

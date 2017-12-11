@@ -8,7 +8,7 @@ in vec2 tex_coord;
 uniform sampler2D tex_samp;
 
 // Simulation parameters (constants)
-uniform vec3 object_color = vec3(0.03, 0.4, 0.8);
+uniform vec3 object_color = vec3(0.4, 0.4, 0.8);
 
 
 void main (void)

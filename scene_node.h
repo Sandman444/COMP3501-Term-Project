@@ -14,7 +14,6 @@
 #include "GameException.h"
 #include "resource_manager.h"
 #include "resource.h"
-#include "shader_attribute.h"
 
 namespace game {
 
@@ -26,7 +25,7 @@ namespace game {
         public:
             // Create scene node from given resources
 			SceneNode(const std::string name);
-            SceneNode(const std::string name, std::string object_name, std::string material_name);
+            SceneNode(const std::string name, const std::string object_name, const std::string material_name, const std::string texture_name = NULL);
 
             // Destructor
             ~SceneNode();
@@ -38,6 +37,7 @@ namespace game {
             glm::vec3 GetPosition(void) const;
             glm::quat GetOrientation(void) const;
             glm::vec3 GetScale(void) const;
+			bool GetBlending(void) const;
 			virtual float getBoundingSphereRadius(void) const;
 
 
@@ -58,6 +58,7 @@ namespace game {
 
             // Update the node
             virtual void Update(void);
+			virtual void Update(glm::vec3 position);
 
             // OpenGL variables
             GLenum GetMode(void) const;
@@ -65,6 +66,7 @@ namespace game {
             GLuint GetElementArrayBuffer(void) const;
             GLsizei GetSize(void) const;
             GLuint GetMaterial(void) const;
+
 
             // Hierarchy-related methods
             void addChild(SceneNode *node);
@@ -88,17 +90,17 @@ namespace game {
             GLenum mode_; // Type of geometry
             GLsizei size_; // Number of primitives in geometry
             GLuint material_; // Reference to shader program
+			GLuint texture_; //Reference to texture resource
+			bool blending_ = false; // Draw with blending or not
  
             // Hierarchy
             SceneNode *parent_;
             std::vector<SceneNode *> children_;
 
-			//std::vector<ShaderAttribute> shader_att_; // Shader attributes
             // Set matrices that transform the node in a shader program
             // Return transformation of current node combined with
             // parent transformation, without including scaling
             glm::mat4 SetupShader(GLuint program, glm::mat4 parent_transf);
-			bool blending_; // Draw with blending or not
 
     }; // class SceneNode
 

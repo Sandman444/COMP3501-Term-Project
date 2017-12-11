@@ -5,22 +5,24 @@
 
 namespace game {
 
-	Laser::Laser() : SceneNode("laser", "CylinderMesh", "ObjectMaterial") {
+	Laser::Laser(std::string name) : SceneNode(name + "laser", "CylinderMesh", "EnemyMaterial", "") {
 
 		SetScale(glm::vec3(0.01, 50.0, 0.01));
 		SetOrientation(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(0, 0, 1.0)));
 		Rotate(glm::angleAxis(glm::pi<float>() / 2.0f, glm::vec3(0, 1.0, 0)));
 		SetPosition(glm::vec3(-GetScale().y / 2, 0, 0));
 
-		//add the thrusters to the missile
-		//NOTE: needs texture support
-		laserEffect = new SceneNode(GetName() + "Effect", "TorusParticles", "LaserMaterial");
-		laserEffect->SetPosition(this->GetPosition());
+		laserEffect = new SceneNode(GetName() + "LaserEffect", "TorusParticles", "LaserMaterial", "Flame");
+		laserEffect->SetBlending(true);
+		laserEffect->SetPosition(glm::vec3(0, -GetScale().y / 2 + 0.4, 0));
+		laserEffect->SetScale(glm::vec3(0.1, 0.1, 0.1));
+		laserEffect->Rotate(glm::angleAxis(glm::pi<float>() / 2, glm::vec3(-1, 0, 0)));
 		this->addChild(laserEffect);
 	}
 
 
 	Laser::~Laser() {
+		delete laserEffect;
 	}
 
 	void Laser::on() {

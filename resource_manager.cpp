@@ -4,7 +4,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <SOIL/SOIL.h>
 
 #include "resource_manager.h"
 
@@ -30,22 +29,17 @@ void ResourceManager::AddResource(ResourceType type, const std::string name, GLu
 	resource_[name] = res;
 }
 
-//Add a data resource
-void ResourceManager::AddResource(ResourceType type, const std::string name, GLfloat *data, GLsizei size) {
-
-	Resource *res;
-
-	res = new Resource(type, name, data, size);
-
-	resource_[name] = res;
-}
 
 void ResourceManager::LoadResource(ResourceType type, const std::string name, const char *filename){
 
     // Call appropriate method depending on type of resource
     if (type == Material){
         LoadMaterial(name, filename);
-    } else {
+	}
+	else if (type == Texture) {
+		LoadTexture(name, filename);
+	}
+	else {
         throw(std::invalid_argument(std::string("Invalid type of resource")));
     }
 }
@@ -179,6 +173,19 @@ std::string ResourceManager::LoadTextFile(const char *filename){
     f.close();
 
     return content;
+}
+
+void ResourceManager::LoadTexture(const std::string name, const char *filename) {
+
+	// Load texture from file
+	std::cout << "Loading a texture" << std::endl;
+	GLuint texture = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
+	if (!texture) {
+		throw(std::ios_base::failure(std::string("Error loading texture ") + std::string(filename) + std::string(": ") + std::string(SOIL_last_result())));
+	}
+
+	// Create resource
+	AddResource(Texture, name, texture, 0);
 }
 
 
@@ -584,6 +591,35 @@ void ResourceManager::CreateCylinder(std::string object_name, float cylinder_rad
 	AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
 }
 
+void ResourceManager::CreateWall(std::string object_name) {
+
+	// Definition of the wall
+	// The wall is simply a quad formed with two triangles
+	GLfloat vertex[] = {
+		// Position, normal, color, texture coordinates
+		// Here, color stores the tangent of the vertex
+		-1.0, -1.0, 0.0,  0.0, 1.0,  0.0,  1.0, 0.0, 0.0,  0.0, 0.0,
+		-1.0,  1.0, 0.0,  0.0, 1.0,  0.0,  1.0, 0.0, 0.0,  0.0, 1.0,
+		1.0,  1.0, 0.0,  0.0, 1.0,  0.0,  1.0, 0.0, 0.0,  1.0, 1.0,
+		1.0, -1.0, 0.0,  0.0, 1.0,  0.0,  1.0, 0.0, 0.0,  1.0, 0.0 };
+	GLuint face[] = { 0, 2, 1,
+		0, 3, 2 };
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo, ebo;
+
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, 4 * 11 * sizeof(GLfloat), vertex, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 2 * 3 * sizeof(GLuint), face, GL_STATIC_DRAW);
+
+	// Create resource
+	AddResource(Mesh, object_name, vbo, ebo, 2 * 3);
+}
+
 void ResourceManager::CreateSphereParticles(std::string object_name, int num_particles) {
 
 	// Create a set of points which will be the particles
@@ -729,75 +765,68 @@ void ResourceManager::CreateTorusParticles(std::string object_name, int num_part
 	AddResource(PointSet, object_name, vbo, 0, num_particles);
 }
 
+void ResourceManager::CreateConeParticles(std::string object_name, int num_particles, float loop_radius, float circle_radius) {
 
-void ResourceManager::CreateControlPoints(std::string object_name, int num_control_points) {
+	// Create a set of points which will be the particles
+	// This is similar to drawing a torus
 
-	// Adjust number of control points, if needed, so that we have
-	// groups of four control points
-	if ((num_control_points % 4) != 0) {
-		num_control_points += (4 - (num_control_points % 4));
+	// Data buffer
+	GLfloat *particle = NULL;
+
+	// Number of attributes per particle: position (3), normal (3), and color (3), texture coordinates (2)
+	const int particle_att = 11;
+
+	// Allocate memory for buffer
+	try {
+		particle = new GLfloat[num_particles * particle_att];
+	}
+	catch (std::exception &e) {
+		throw e;
 	}
 
-	// Variable to hold the control points for the spline
-	GLfloat *control_point;
+	float maxspray = 0.5; // This is how much we allow the points to deviate from the sphere
+	float u, v, w, theta, phi, spray; // Work variables
 
-	// Allocate memory for control points
-	int num_att = 3;
-	control_point = new GLfloat[num_control_points * num_att];
+	float r = 0.2;
+	float h = 0.5;
 
-	// Create control points of a piecewise spline
-	// We store the control points in groups of 4 
-	// Each group represents the control points (p0, p1, p2, p3) of a cubic Bezier curve
-	// To ensure C1 continuity, we constrain the first and second point of each curve according to the previous curve
+	for (int i = 0; i < num_particles; i++) {
 
-	// Initialize the first two control points to fixed values
-	// First
-	control_point[0] = 0.0;
-	control_point[1] = 0.0;
-	control_point[2] = 0.0;
-	// Second
-	control_point[3] = 0.0;
-	control_point[4] = 3.0;
-	control_point[5] = 0.0;
+		// Get a random point on a torus
 
-	// Create remaining points
-	for (int i = 2; i < num_control_points; i++) {
-		// Check if we have the first or second point of a curve
-		// Then we need to constrain the points
-		if (i % 4 == 0) {
-			// Constrain the first point of the curve
-			// p3 = q0, where the previous curve is (p0, p1, p2, p3) and the current curve is (q0, q1, q2, q3)
-			// p3 is at position -1 from the current point q0
-			for (int k = 0; k < 3; k++) {
-				control_point[i*num_att + k] = control_point[(i - 1)*num_att + k];
-			}
-		}
-		else if (i % 4 == 1) {
-			// Constrain the second point of the curve
-			// q1 = 2*p3 - p2
-			// p3 is at position -1 and we add another -1 since we are at i%4 == 1 (not i%4 == 0)
-			// p2 is at position -2 and we add another -1 since we are at i%4 == 1 (not i%4 == 0)
-			for (int k = 0; k < 3; k++) {
-				control_point[i*num_att + k] = 2.0*control_point[(i - 2)*num_att + k] - control_point[(i - 3)*num_att + k];
-			}
-		}
-		else {
-			// Other points: we can freely assign random values to them
-			// Get 3 random numbers
-			float u, v, w;
-			u = ((double)rand() / (RAND_MAX));
-			v = ((double)rand() / (RAND_MAX));
-			w = ((double)rand() / (RAND_MAX));
-			// Define control points based on u, v, and w and scale by the control point index
-			control_point[i*num_att] = u*3.0*(i / 4 + 1);
-			control_point[i*num_att + 1] = v*3.0*(i / 4 + 1);
-			control_point[i*num_att + 2] = w*2.5*(i / 4 + 1);
-			//control_point[i*num_att + 2] = 0.0; // Easier to visualize with the control points on the screen
+		// Get two random numbers
+		u = ((double)rand() / (RAND_MAX));
+		v = ((double)rand() / (RAND_MAX));
+
+		// Use u to define the angle theta along the loop of the torus
+		theta = u * 2.0*glm::pi<float>();
+		// Use v to define the angle phi along the circle of the torus
+		//phi = acos(v * (a - h) / a);
+
+		// Define the normal and point based on theta and phi
+		glm::vec3 normal(r * cos(theta) * h, r * sin(theta) * h, -h);
+		glm::vec3 position(0, 0, 0);
+		glm::vec3 color(i / (float)num_particles, 0.0, 1.0 - (i / (float)num_particles)); // The red channel of the color stores the particle id
+
+																						  // Add vectors to the data buffer
+		for (int k = 0; k < 3; k++) {
+			particle[i*particle_att + k] = position[k];
+			particle[i*particle_att + k + 3] = normal[k];
+			particle[i*particle_att + k + 6] = color[k];
 		}
 	}
+
+	// Create OpenGL buffers and copy data
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, num_particles * particle_att * sizeof(GLfloat), particle, GL_STATIC_DRAW);
+
+	// Free data buffers
+	delete[] particle;
 
 	// Create resource
-	AddResource(Data, object_name, control_point, num_control_points * num_att);
+	AddResource(PointSet, object_name, vbo, 0, num_particles);
 }
 
 } // namespace game;

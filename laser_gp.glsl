@@ -24,7 +24,7 @@ void main(void){
     // Get the position of the particle
     vec4 position = gl_in[0].gl_Position;
 
-    // Define the positions of the four vertices that will form a quad
+    // Define the positions of the four vertices that will form a quad 
     // The positions are based on the position of the particle and its size
     // We simply add offsets to the position (we can think of it as the center of the particle),
     // since we are already in camera space

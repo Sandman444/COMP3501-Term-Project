@@ -9,7 +9,7 @@ namespace game {
 
 	public:
 		// Constructor
-		Laser();
+		Laser(std::string name);
 
 		// Destructor
 		~Laser();
@@ -24,8 +24,9 @@ namespace game {
 
 	private:
 
+		SceneNode *laserEffect;
+
 		bool firing;
-		SceneNode* laserEffect;
 	};
 
 } // namespace game

@@ -8,12 +8,15 @@
 
 namespace game {
 
-	Tank::Tank() : DirectionalSceneNode("tank", "", "") {
-		tank_body = new SceneNode("tank_body", "CubeMesh", "ObjectMaterial");
-		gun_turret = new SceneNode("tank_turret", "CubeMesh", "ObjectMaterial");
-		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "ObjectMaterial");
-		tread1 = new SceneNode("tank_tread1", "CubeMesh", "ObjectMaterial");
-		tread2 = new SceneNode("tank_tread2", "CubeMesh", "ObjectMaterial");
+	Tank::Tank(EnemyProjectileManager *manager) : DirectionalSceneNode("tank", "", "", "") {
+
+		projectileManager = manager;
+
+		tank_body = new SceneNode("tank_body", "CubeMesh", "EnemyMaterial", "");
+		gun_turret = new DirectionalSceneNode("tank_turret", "CubeMesh", "EnemyMaterial", "");
+		gun_barrel = new SceneNode("tank_barrel", "CylinderMesh", "EnemyMaterial", "");
+		tread1 = new SceneNode("tank_tread1", "CubeMesh", "EnemyMaterial", "");
+		tread2 = new SceneNode("tank_tread2", "CubeMesh", "EnemyMaterial", "");
 
 		// Set up body
 		tank_body->SetScale(glm::vec3(0.2, 0.04, 0.2));
@@ -24,6 +27,8 @@ namespace game {
 		side_ = glm::vec3(0, 0, 1);
 
 		// Set up gun
+		gun_turret->setForward(this->getForward());
+		gun_turret->setSide(this->getSide());
 		gun_turret->SetScale(glm::vec3(tankBodyScale.x / 1.5, tankBodyScale.y * 3, tankBodyScale.z / 1.5));
 		glm::vec3 gunScale = gun_turret->GetScale();
 		gun_turret->SetPosition(glm::vec3(0, tankBodyScale.y* 1.5, 0));
@@ -78,8 +83,42 @@ namespace game {
 		turnDirection += -1;
 	}
 
-	void Tank::Update(void) {
+	void Tank::Update(glm::vec3 playerPosition) {
+		//find position of player and self
+		glm::vec2 playerPos = glm::vec2(playerPosition.x, playerPosition.z);
+		glm::vec2 currentPos = glm::vec2(GetPosition().x, GetPosition().z);
 
+		//find vector between self and player then normalize
+		glm::vec2 newDirection = glm::vec2(0, 0);
+		newDirection = currentPos - playerPos;
+		newDirection = glm::normalize(newDirection);
+		glm::vec2 forward = glm::vec2(getForward().x, getForward().z);
+		forward = glm::normalize(forward);
+		float theta = 0;
+		if (newDirection.x != NULL) {
+			theta = acos(glm::dot(newDirection, forward) / (glm::length(newDirection) * glm::length(newDirection)));
+		}
+
+		//change the orientation of the turret
+		if (newDirection.y < 0) {
+			gun_turret->SetOrientation(glm::angleAxis(-theta, glm::vec3(0.0, 1.0, 0.0)));
+		}
+		else {
+			gun_turret->SetOrientation(glm::angleAxis(theta, glm::vec3(0.0, 1.0, 0.0)));
+		}
+
+		this->Translate(velocity);
+
+		double currentTime = glfwGetTime();
+		if (currentTime - lastMissileFire > missileFireInterval) {
+			lastMissileFire = currentTime;
+
+			projectileManager->spawnSplineMissile(GetPosition(), -(gun_turret->getForward()), -gun_turret->GetOrientation(), playerPosition);
+		}
+	}
+
+	float Tank::getLevel() {
+		return tank_body->GetScale().y / 2;
 	}
 
 	float Tank::getBoundingSphereRadius(void) const {

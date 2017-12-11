@@ -8,16 +8,16 @@
 
 namespace game {
 
-	Helicopter::Helicopter(ProjectileManager *manager) : DirectionalSceneNode("helicopter", "", "") {
+	Helicopter::Helicopter(std::string name, std::string material, PlayerProjectileManager *manager) : DirectionalSceneNode(name, "", "", "") {
 
 		projectileManager = manager;
 
-		body = new SceneNode("helicopter_body", "CubeMesh", "ObjectMaterial");
-		cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", "ObjectMaterial");
-		rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", "ObjectMaterial");
-		rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
-		tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
-		tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", "ObjectMaterial");
+		body = new SceneNode("helicopter_body", "CubeMesh", material, "");
+		cockpit = new SceneNode("helicopter_rotorblade", "CubeMesh", material, "");
+		rotorbladeJoint = new SceneNode("helicopter_rotorbladeJoint", "CylinderMesh", material, "");
+		rotorBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", material, "");
+		tail = new SceneNode("helicopter_rotorBlade", "CylinderMesh", material, "");
+		tailBlade = new SceneNode("helicopter_rotorBlade", "CylinderMesh", material, "");
 
 		// Set up body
 		body->SetScale(glm::vec3(0.42, 0.15, 0.15));
@@ -25,7 +25,8 @@ namespace game {
 		this->addChild(body);
 
 		// Attach laser
-		body->addChild(&laser);
+		laser = new Laser(name);
+		body->addChild(laser);
 
 		// Set up cockpit
 		cockpit->SetScale(glm::vec3(bodyScale.y / 2.0, bodyScale.y / 2.0, bodyScale.z));
@@ -62,18 +63,18 @@ namespace game {
 		side_ = glm::vec3(0, 0, 1);
 
 		// Other settings
-		accelerationSpeed = 0.001f;
+		accelerationSpeed = 0.0017f;
 		turnSpeed = 0.0008f;
 		tiltSpeed = 0.001f;
 
 		tiltFriction = 0.03f;
-		airFriction = 0.02f;
+		airFriction = 0.018f;
 		levelingForce = 0.07f;
 	}
 
 
 	Helicopter::~Helicopter() {
-		delete body, cockpit, rotorbladeJoint, rotorBlade, tail, tailBlade;
+		delete body, cockpit, rotorbladeJoint, rotorBlade, tail, tailBlade, laser;
 	}
 
 	void Helicopter::moveUp() {
@@ -129,8 +130,8 @@ namespace game {
 	}
 
 	void Helicopter::fireLaser() {
-		laser.on();
-		projectileManager->setLaserOn(laser.isOn());
+		laser->on();
+		projectileManager->setLaserOn(laser->isOn());
 	}
 
 	void Helicopter::Update(void) {
@@ -187,9 +188,9 @@ namespace game {
 
 		// Update laser
 		projectileManager->setLaserStart(GetPosition());
-		projectileManager->setLaserEnd(getForward() * laser.getLength());
-		laser.off();
-		projectileManager->setLaserOn(laser.isOn());
+		projectileManager->setLaserEnd(getForward() * laser->getLength());
+		laser->off();
+		projectileManager->setLaserOn(laser->isOn());
 	}
 
 	float Helicopter::getBoundingSphereRadius(void) const {

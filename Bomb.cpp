@@ -6,21 +6,19 @@
 namespace game {
 
 	Bomb::Bomb(glm::vec3 position) : Projectile(position, glm::vec3(0, -1, 0)) {
-		projectileModel = new SceneNode(GetName() + "Model", "SphereMesh", "ObjectMaterial");
+		projectileModel = new SceneNode(GetName() + "Model", "SphereMesh", "PlayerMaterial", "");
 		projectileModel->SetScale(glm::vec3(0.2, 0.2, 0.2));
 		this->addChild(projectileModel);
 
-		speed = 0.01;
+		explosionEffect = new SceneNode(GetName() + "ExplosionEffect", "SphereParticles", "ExplosionMaterial", "Sparkle");
+		projectileModel->addChild(explosionEffect);
 
-		//add the explosion to the bomb to show when it blows up
-		//NOTE: Needs explosion effect
-		projectileEffect = new SceneNode(GetName() + "Effect", "TorusParticles", "LaserMaterial");
-		//projectileEffect->SetPosition(glm::vec3(0, 0, 0));
-		projectileModel->addChild(projectileEffect);
+		speed = 0.01;
 	}
 
 
 	Bomb::~Bomb() {
+		delete explosionEffect;
 	}
 
 	void Bomb::move() {
@@ -30,16 +28,32 @@ namespace game {
 			}
 			Translate(forward_ * velocity);
 		}
+		else if (exploding) {
+			double currentTime = glfwGetTime();
+			if (currentTime - explosionTimer > explosionDuration) {
+				exploding = false;
+				doneExploding = true;
+			}
+		}
+		else if (!doneExploding) {
+			exploding = true;
+			//projectileModel->addChild(explosionEffect);
+			explosionTimer = glfwGetTime();
+		}
 	}
 
 	float Bomb::getBoundingSphereRadius(void) const {
-		if (GetPosition().y > 0) {
+		if (!exploding) {
 			return projectileModel->GetScale().x > projectileModel->GetScale().y ? std::max(projectileModel->GetScale().x, projectileModel->GetScale().z) : std::max(projectileModel->GetScale().y, projectileModel->GetScale().z);
 		}
 		else {
 			glm::vec3 explosionScale = glm::vec3(1.5, 1.5, 1.5);
 			return explosionScale.x > explosionScale.y ? std::max(explosionScale.x, explosionScale.z) : std::max(explosionScale.y, explosionScale.z);
 		}
+	}
+
+	bool Bomb::isOutOfRange() {
+		return doneExploding;
 	}
 
 } // namespace game

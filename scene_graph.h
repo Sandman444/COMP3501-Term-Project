@@ -22,7 +22,7 @@ namespace game {
             glm::vec3 background_color_;
 
             // Root of the hierarchy
-            SceneNode * root_;
+            SceneNode *root_;
 
         public:
             SceneGraph(void);
